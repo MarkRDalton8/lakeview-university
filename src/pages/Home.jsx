@@ -38,31 +38,17 @@ export default function Home() {
   const [userEmail, setUserEmail] = useState("");
   const [currentSection, setCurrentSection] = useState("home");
 
-  // Piano ID — Session detection + login/logout event listeners
+  // Piano ID — Passive session detection (no modal triggered)
   useEffect(() => {
     const tp = window.tp || [];
     tp.push(["init", function() {
-      // Pick up existing session (returning user / page refresh)
+      // Passively check for existing Piano ID session (no modal triggered)
       const user = window.tp.pianoId.getUser();
       if (user) {
         setIsLoggedIn(true);
         setUserName((user.firstName || "") + " " + (user.lastName || ""));
         setUserEmail(user.email || "");
       }
-
-      // Listen for login/logout events going forward
-      window.tp.pianoId.show({
-        loggedIn: function(data) {
-          setIsLoggedIn(true);
-          setUserName((data.user.firstName || "") + " " + (data.user.lastName || ""));
-          setUserEmail(data.user.email || "");
-        },
-        loggedOut: function() {
-          setIsLoggedIn(false);
-          setUserName("");
-          setUserEmail("");
-        }
-      });
     }]);
   }, []);
 
