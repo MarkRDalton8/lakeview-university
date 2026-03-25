@@ -7,8 +7,8 @@ export default function NewsArticle() {
   const article = NEWS.find(n => n.slug === slug);
 
   useEffect(() => {
-    // Fire Piano experience when news loads
-    if (window.tp) {
+    // Re-trigger Composer on route change for SPA
+    if (window.tp && window.tp.experience) {
       window.tp.experience.execute();
     }
   }, [slug]);
@@ -23,7 +23,31 @@ export default function NewsArticle() {
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px' }}>
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px', background: '#FAF8F5', minHeight: '100vh' }}>
+      <style>{`
+        .piano-container--active ~ * {
+          display: none;
+        }
+        .piano-container--active {
+          position: relative;
+        }
+        .piano-container--active::before {
+          content: "";
+          position: absolute;
+          bottom: 100%;
+          left: 0;
+          right: 0;
+          height: 200px;
+          pointer-events: none;
+          background-image: linear-gradient(
+            to top,
+            #FAF8F5 0%,
+            #FAF8F5 20%,
+            rgba(250, 248, 245, 0) 100%
+          );
+        }
+      `}</style>
+
       <Link to="/" style={{ color: '#0066cc', textDecoration: 'none' }}>
         ← Back to Digital Commons
       </Link>
@@ -66,33 +90,48 @@ export default function NewsArticle() {
           {article.date}
         </div>
 
-        <p style={{ fontSize: '18px', lineHeight: '1.6', marginBottom: '32px', color: '#333' }}>
+        {/* Teaser: First 2-3 paragraphs are always visible */}
+        <p style={{ fontSize: '18px', lineHeight: '1.6', marginBottom: '24px', color: '#333' }}>
           {article.excerpt}
         </p>
 
-        {article.locked ? (
-          <div style={{
-            padding: '40px',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            borderRadius: '8px',
-            textAlign: 'center'
-          }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔒</div>
-            <h2 style={{ marginBottom: '16px' }}>Full Story Access Required</h2>
-            <p style={{ marginBottom: '24px', opacity: 0.9 }}>
-              Subscribe to Lakeview Digital Commons to read the complete story and access all campus news.
-            </p>
-            <div id="piano-offer-container"></div>
-          </div>
-        ) : (
-          <div style={{ lineHeight: '1.8', fontSize: '16px' }}>
-            <p style={{ marginBottom: '16px' }}>
-              Full article content would appear here for unlocked news articles.
-              This story is freely accessible to demonstrate the site structure.
-            </p>
-          </div>
-        )}
+        <p style={{ fontSize: '16px', lineHeight: '1.8', marginBottom: '24px' }}>
+          University officials announced the landmark achievement during a press conference this morning,
+          highlighting the significance of this development for both the institution and the broader community.
+          The initiative represents a major milestone in the university's ongoing commitment to excellence.
+        </p>
+
+        {/* Piano inline template container — only on locked content */}
+        {article.locked && <div className="piano-container"></div>}
+
+        {/* Remaining article content — hidden when piano-container--active */}
+        <p style={{ fontSize: '16px', lineHeight: '1.8', marginBottom: '24px' }}>
+          "This is a transformative moment for our community," said University President Dr. Sarah Chen.
+          "The impact of this initiative will be felt for generations to come, as we continue to push
+          the boundaries of what's possible in higher education and research."
+        </p>
+
+        <p style={{ fontSize: '16px', lineHeight: '1.8', marginBottom: '24px' }}>
+          The development comes after months of careful planning and coordination between multiple university
+          departments, community stakeholders, and external partners. Faculty members and students alike
+          have expressed enthusiasm about the opportunities this will create.
+        </p>
+
+        <p style={{ fontSize: '16px', lineHeight: '1.8', marginBottom: '24px' }}>
+          Details about the timeline for implementation and specific programs that will be affected are
+          expected to be released in the coming weeks. The university has committed to providing regular
+          updates as the initiative progresses.
+        </p>
+
+        <p style={{ fontSize: '16px', lineHeight: '1.8', marginBottom: '24px' }}>
+          Community members interested in learning more can attend an information session scheduled for
+          next week in the main auditorium. Additional resources and FAQs will be made available on the
+          university's website.
+        </p>
+
+        <p style={{ fontSize: '16px', lineHeight: '1.8', marginBottom: '24px', fontStyle: 'italic', color: '#666' }}>
+          This story is developing. Check back for updates as more information becomes available.
+        </p>
       </div>
     </div>
   );

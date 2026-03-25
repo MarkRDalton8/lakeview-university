@@ -7,8 +7,8 @@ export default function CoursePage() {
   const course = COURSES.find(c => c.slug === slug);
 
   useEffect(() => {
-    // Fire Piano experience when course loads
-    if (window.tp) {
+    // Re-trigger Composer on route change for SPA
+    if (window.tp && window.tp.experience) {
       window.tp.experience.execute();
     }
   }, [slug]);
@@ -23,7 +23,31 @@ export default function CoursePage() {
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px' }}>
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px', background: '#FAF8F5', minHeight: '100vh' }}>
+      <style>{`
+        .piano-container--active ~ * {
+          display: none;
+        }
+        .piano-container--active {
+          position: relative;
+        }
+        .piano-container--active::before {
+          content: "";
+          position: absolute;
+          bottom: 100%;
+          left: 0;
+          right: 0;
+          height: 200px;
+          pointer-events: none;
+          background-image: linear-gradient(
+            to top,
+            #FAF8F5 0%,
+            #FAF8F5 20%,
+            rgba(250, 248, 245, 0) 100%
+          );
+        }
+      `}</style>
+
       <Link to="/" style={{ color: '#0066cc', textDecoration: 'none' }}>
         ← Back to Digital Commons
       </Link>
@@ -62,33 +86,60 @@ export default function CoursePage() {
           <strong>Enrolled:</strong> {course.enrolled} students • {course.modules} modules
         </div>
 
-        {course.locked ? (
-          <div style={{
-            padding: '40px',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            borderRadius: '8px',
-            textAlign: 'center',
-            marginTop: '40px'
-          }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔒</div>
-            <h2 style={{ marginBottom: '16px' }}>Course Access Required</h2>
-            <p style={{ marginBottom: '24px', opacity: 0.9 }}>
-              Subscribe to Lakeview Digital Commons to access course materials and lectures.
-            </p>
-            <div id="piano-offer-container"></div>
-          </div>
-        ) : (
-          <div>
-            <h2 style={{ marginTop: '32px', marginBottom: '16px' }}>Course Materials</h2>
-            <ul style={{ lineHeight: '2' }}>
-              <li>Week 1: Introduction</li>
-              <li>Week 2: Fundamentals</li>
-              <li>Week 3: Advanced Topics</li>
-              <li>Week 4: Case Studies</li>
-            </ul>
-          </div>
-        )}
+        {/* Teaser: Course overview is always visible */}
+        <div style={{
+          padding: '20px',
+          background: '#f5f5f5',
+          borderLeft: '4px solid #227845',
+          marginBottom: '32px'
+        }}>
+          <h3 style={{ marginBottom: '12px', fontSize: '14px', textTransform: 'uppercase', color: '#666' }}>
+            Course Overview
+          </h3>
+          <p style={{ lineHeight: '1.6' }}>
+            This course provides comprehensive coverage of {course.title.toLowerCase()}, combining theoretical
+            foundations with practical applications. Students will engage with cutting-edge concepts and develop
+            the skills needed to excel in this field.
+          </p>
+        </div>
+
+        {/* Piano inline template container — only on locked content */}
+        {course.locked && <div className="piano-container"></div>}
+
+        {/* Course materials — hidden when piano-container--active */}
+        <div style={{ lineHeight: '1.8', fontSize: '16px' }}>
+          <h2 style={{ marginTop: '32px', marginBottom: '16px' }}>Course Materials</h2>
+          <ul style={{ lineHeight: '2', marginLeft: '20px', marginBottom: '24px' }}>
+            <li>Week 1: Introduction & Fundamentals</li>
+            <li>Week 2: Core Concepts & Theory</li>
+            <li>Week 3: Advanced Topics</li>
+            <li>Week 4: Practical Applications</li>
+            <li>Week 5: Case Studies</li>
+            <li>Week 6: Group Project</li>
+            <li>Week 7: Advanced Techniques</li>
+            <li>Week 8: Real-World Examples</li>
+          </ul>
+
+          <h2 style={{ marginTop: '32px', marginBottom: '16px' }}>Learning Objectives</h2>
+          <p style={{ marginBottom: '16px' }}>
+            By the end of this course, students will be able to apply core principles, analyze complex problems,
+            and develop practical solutions using industry-standard tools and methodologies.
+          </p>
+
+          <h2 style={{ marginTop: '32px', marginBottom: '16px' }}>Assessments</h2>
+          <ul style={{ lineHeight: '2', marginLeft: '20px', marginBottom: '24px' }}>
+            <li>Weekly quizzes (20%)</li>
+            <li>Midterm exam (25%)</li>
+            <li>Group project (30%)</li>
+            <li>Final exam (25%)</li>
+          </ul>
+
+          <h2 style={{ marginTop: '32px', marginBottom: '16px' }}>Required Readings</h2>
+          <p style={{ marginBottom: '16px' }}>
+            All course readings will be made available through the Digital Commons library. Additional resources
+            and supplementary materials will be posted to the course portal throughout the semester.
+          </p>
+        </div>
       </div>
     </div>
   );
