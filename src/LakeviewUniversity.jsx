@@ -5,10 +5,9 @@ import { useState, useEffect, useRef } from "react";
 // real Piano sandbox/production credentials
 // ============================================================
 const PIANO_CONFIG = {
-  AID: "YOUR_PIANO_AID_HERE",           // Piano Application ID
-  SANDBOX: true,                         // true for sandbox, false for production
-  PIANO_JS_URL: "https://sandbox.tinypass.com/xbuilder/experience/load?aid=YOUR_PIANO_AID_HERE",
-  // For production: "https://experience.tinypass.com/xbuilder/experience/load?aid=YOUR_PIANO_AID_HERE"
+  AID: "QiNgMM49pu",                     // Piano Application ID
+  SANDBOX: false,                        // true for sandbox, false for production
+  PIANO_JS_URL: "https://experience.tinypass.com/xbuilder/experience/load?aid=QiNgMM49pu",
 };
 
 // ============================================================
