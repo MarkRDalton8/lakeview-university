@@ -39,7 +39,7 @@ API_BASE_URL = os.getenv('PIANO_API_BASE_URL', 'https://api.tinypass.com/api/v3'
 APP_ID = os.getenv('PIANO_APP_ID')
 
 # Site License Configuration
-TERM_ID = os.getenv('PIANO_TERM_ID')
+CONTRACT_ID = os.getenv('PIANO_CONTRACT_ID')
 
 # File Configuration
 CSV_FILE_PATH = os.getenv('CSV_FILE_PATH', 'users_to_upload.csv')
@@ -84,24 +84,54 @@ def create_or_update_user(user_data: Dict) -> Dict:
         return {'error': str(e), 'user_email': user_data['email']}
 
 
-def grant_term_to_user(user_uid: str, email: str) -> Dict:
+def add_user_to_contract(email: str, first_name: str, last_name: str) -> Dict:
     """
-    Grant a term (site license) to a user.
+    Add a user to a site license contract.
 
     Args:
-        user_uid: User's unique identifier
+        email: User's email address
+        first_name: User's first name
+        last_name: User's last name
+
+    Returns:
+        API response as dictionary
+    """
+    endpoint = f'{API_BASE_URL}/publisher/licensing/contractUser/create'
+
+    payload = {
+        'api_token': API_TOKEN,
+        'aid': APP_ID,
+        'contract_id': CONTRACT_ID,
+        'email': email,
+        'first_name': first_name,
+        'last_name': last_name,
+    }
+
+    try:
+        response = requests.post(endpoint, data=payload)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        return {'error': str(e), 'user_email': email}
+
+
+def redeem_contract_access(email: str) -> Dict:
+    """
+    Redeem access through the contract for a specific user.
+
+    Args:
         email: User's email address
 
     Returns:
         API response as dictionary
     """
-    endpoint = f'{API_BASE_URL}/publisher/term/grant'
+    endpoint = f'{API_BASE_URL}/publisher/licensing/contract/redeem'
 
     payload = {
         'api_token': API_TOKEN,
         'aid': APP_ID,
-        'term_id': TERM_ID,
-        'user_uid': user_uid,
+        'contract_id': CONTRACT_ID,
+        'email': email,
     }
 
     try:
@@ -160,15 +190,16 @@ def main():
         print("   Add your Piano Application ID to .env")
         return
 
-    if not TERM_ID:
-        print("❌ ERROR: PIANO_TERM_ID not set in .env file")
-        print("   Add your Piano Term ID to .env")
+    if not CONTRACT_ID:
+        print("❌ ERROR: PIANO_CONTRACT_ID not set in .env file")
+        print("   Add your Piano Site License Contract ID to .env")
+        print("   Find it in: Piano Dashboard → Products → Licenses → [Your License] → Contracts")
         return
 
     print(f"✅ Configuration loaded from .env")
     print(f"   API Base URL: {API_BASE_URL}")
     print(f"   App ID: {APP_ID}")
-    print(f"   Term ID: {TERM_ID}")
+    print(f"   Contract ID: {CONTRACT_ID}")
     print(f"   Rate Limit: {RATE_LIMIT_DELAY}s delay")
     print()
 
@@ -197,32 +228,34 @@ def main():
     for i, user in enumerate(users, 1):
         print(f"[{i}/{len(users)}] Processing: {user['email']}")
 
-        # Step 1: Create/update user
-        user_response = create_or_update_user(user)
+        # Step 1: Add user to contract
+        contract_user_response = add_user_to_contract(
+            email=user['email'],
+            first_name=user['first_name'],
+            last_name=user['last_name']
+        )
 
-        if 'error' in user_response:
-            print(f"  ❌ Failed to create user: {user_response['error']}")
+        if 'error' in contract_user_response:
+            print(f"  ❌ Failed to add user to contract: {contract_user_response['error']}")
             results['failed'].append({
                 'email': user['email'],
-                'error': user_response['error']
+                'error': contract_user_response['error']
             })
             continue
 
-        print(f"  ✅ User created/updated")
+        print(f"  ✅ User added to contract")
 
-        # Step 2: Grant term to user
-        user_uid = user['user_id']  # or extract from user_response if Piano returns it
+        # Step 2: Redeem access for user
+        redeem_response = redeem_contract_access(user['email'])
 
-        term_response = grant_term_to_user(user_uid, user['email'])
-
-        if 'error' in term_response:
-            print(f"  ⚠️  Warning: Failed to grant term: {term_response['error']}")
+        if 'error' in redeem_response:
+            print(f"  ⚠️  Warning: Failed to redeem access: {redeem_response['error']}")
             results['failed'].append({
                 'email': user['email'],
-                'error': f"Term grant failed: {term_response['error']}"
+                'error': f"Access redemption failed: {redeem_response['error']}"
             })
         else:
-            print(f"  ✅ Term granted")
+            print(f"  ✅ Access redeemed")
             results['success'].append(user['email'])
 
         # Rate limiting

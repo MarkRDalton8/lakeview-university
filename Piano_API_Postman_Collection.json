@@ -21,8 +21,8 @@
       "type": "string"
     },
     {
-      "key": "term_id",
-      "value": "YOUR_TERM_ID_HERE",
+      "key": "contract_id",
+      "value": "YOUR_CONTRACT_ID_HERE",
       "type": "string"
     }
   ],
@@ -88,7 +88,7 @@
       "response": []
     },
     {
-      "name": "2. Grant Term to User",
+      "name": "2. Add User to Site License Contract",
       "request": {
         "method": "POST",
         "header": [],
@@ -106,34 +106,91 @@
               "type": "text"
             },
             {
-              "key": "term_id",
-              "value": "{{term_id}}",
+              "key": "contract_id",
+              "value": "{{contract_id}}",
               "type": "text"
             },
             {
-              "key": "user_uid",
-              "value": "USR001",
+              "key": "email",
+              "value": "sarah.johnson@university.edu",
+              "type": "text"
+            },
+            {
+              "key": "first_name",
+              "value": "Sarah",
+              "type": "text"
+            },
+            {
+              "key": "last_name",
+              "value": "Johnson",
               "type": "text"
             }
           ]
         },
         "url": {
-          "raw": "{{api_base_url}}/publisher/term/grant",
+          "raw": "{{api_base_url}}/publisher/licensing/contractUser/create",
           "host": [
             "{{api_base_url}}"
           ],
           "path": [
             "publisher",
-            "term",
-            "grant"
+            "licensing",
+            "contractUser",
+            "create"
           ]
         },
-        "description": "Grants a term (site license) to a user. The user must exist first."
+        "description": "Adds a user to a site license contract. This creates the user in the contract."
       },
       "response": []
     },
     {
-      "name": "3. Get User by Email",
+      "name": "3. Redeem Contract Access for User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "api_token",
+              "value": "{{api_token}}",
+              "type": "text"
+            },
+            {
+              "key": "aid",
+              "value": "{{app_id}}",
+              "type": "text"
+            },
+            {
+              "key": "contract_id",
+              "value": "{{contract_id}}",
+              "type": "text"
+            },
+            {
+              "key": "email",
+              "value": "sarah.johnson@university.edu",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{api_base_url}}/publisher/licensing/contract/redeem",
+          "host": [
+            "{{api_base_url}}"
+          ],
+          "path": [
+            "publisher",
+            "licensing",
+            "contract",
+            "redeem"
+          ]
+        },
+        "description": "Redeems access through the contract for a specific user. Must be called after adding user to contract."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Get User by Email",
       "request": {
         "method": "POST",
         "header": [],
@@ -173,7 +230,7 @@
       "response": []
     },
     {
-      "name": "4. List User Access",
+      "name": "5. List User Access",
       "request": {
         "method": "POST",
         "header": [],
@@ -214,7 +271,7 @@
       "response": []
     },
     {
-      "name": "5. Revoke Term from User",
+      "name": "6. Remove User from Contract",
       "request": {
         "method": "POST",
         "header": [],

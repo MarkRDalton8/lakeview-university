@@ -20,12 +20,14 @@ From Piano Dashboard:
 3. Copy your **API Token**
 4. Note your **Application ID (AID)** - for Lakeview it's `QiNgMM49pu`
 
-### 2. Get Your Term ID
+### 2. Get Your Contract ID
 
-The Term ID represents your site license:
-1. Go to **Products** → **Terms** in Piano Dashboard
-2. Find your site license term
-3. Copy the **Term ID** (e.g., `TMX123ABC`)
+The Contract ID represents your site license contract:
+1. Go to **Products** → **Licenses** in Piano Dashboard
+2. Click on your Site License
+3. Go to the **Contracts** tab
+4. Click on your contract
+5. Copy the **Contract ID** from the URL or contract details (e.g., `CON123ABC`)
 
 ---
 
@@ -52,7 +54,7 @@ The Term ID represents your site license:
    ```bash
    PIANO_API_TOKEN=your_api_token_here
    PIANO_APP_ID=QiNgMM49pu
-   PIANO_TERM_ID=your_term_id_here
+   PIANO_CONTRACT_ID=your_contract_id_here
    ```
 
    **Optional values (with defaults):**
@@ -108,10 +110,12 @@ Upload Complete!
 ### What the Script Does
 
 1. **Reads CSV file** with user data
-2. **Creates/updates each user** in Piano via `/publisher/user/create`
-3. **Grants the term** (site license) to each user via `/publisher/term/grant`
+2. **Adds each user to the site license contract** via `/publisher/licensing/contractUser/create`
+3. **Redeems access for each user** via `/publisher/licensing/contract/redeem`
 4. **Handles rate limiting** (0.1s delay between requests)
 5. **Logs results** to `upload_results.json`
+
+**Note:** This uses the correct Piano Site Licensing API endpoints, not the generic term grant endpoints.
 
 ### Customizing the Script
 
@@ -147,7 +151,7 @@ RATE_LIMIT_DELAY = 0.2  # Slower (5 requests/sec)
 
 ### Using the Collection
 
-The collection includes 5 requests:
+The collection includes 6 requests for site licensing:
 
 #### 1️⃣ Create User
 - **Endpoint:** `POST /publisher/user/create`

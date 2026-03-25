@@ -21,7 +21,8 @@ nano .env
 **Required fields in `.env`:**
 - `PIANO_API_TOKEN` - Get from Piano Dashboard → Settings → API
 - `PIANO_APP_ID` - Your Application ID (e.g., `QiNgMM49pu`)
-- `PIANO_TERM_ID` - The site license term ID to grant
+- `PIANO_CONTRACT_ID` - The site license contract ID
+  - Find in: Piano Dashboard → Products → Licenses → [Your License] → Contracts tab
 
 ### 3. Run Upload
 ```bash
