@@ -1,0 +1,262 @@
+{
+  "info": {
+    "name": "Piano Site Licensing API",
+    "description": "Collection for managing users and site licenses in Piano VX API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "api_base_url",
+      "value": "https://api.tinypass.com/api/v3",
+      "type": "string"
+    },
+    {
+      "key": "api_token",
+      "value": "YOUR_API_TOKEN_HERE",
+      "type": "string"
+    },
+    {
+      "key": "app_id",
+      "value": "QiNgMM49pu",
+      "type": "string"
+    },
+    {
+      "key": "term_id",
+      "value": "YOUR_TERM_ID_HERE",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Create User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "api_token",
+              "value": "{{api_token}}",
+              "type": "text"
+            },
+            {
+              "key": "aid",
+              "value": "{{app_id}}",
+              "type": "text"
+            },
+            {
+              "key": "email",
+              "value": "sarah.johnson@university.edu",
+              "type": "text"
+            },
+            {
+              "key": "first_name",
+              "value": "Sarah",
+              "type": "text"
+            },
+            {
+              "key": "last_name",
+              "value": "Johnson",
+              "type": "text"
+            },
+            {
+              "key": "uid",
+              "value": "USR001",
+              "type": "text"
+            },
+            {
+              "key": "custom_field_newsletter_opt_in",
+              "value": "true",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{api_base_url}}/publisher/user/create",
+          "host": [
+            "{{api_base_url}}"
+          ],
+          "path": [
+            "publisher",
+            "user",
+            "create"
+          ]
+        },
+        "description": "Creates or updates a user in Piano. If the email already exists, the user will be updated."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Grant Term to User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "api_token",
+              "value": "{{api_token}}",
+              "type": "text"
+            },
+            {
+              "key": "aid",
+              "value": "{{app_id}}",
+              "type": "text"
+            },
+            {
+              "key": "term_id",
+              "value": "{{term_id}}",
+              "type": "text"
+            },
+            {
+              "key": "user_uid",
+              "value": "USR001",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{api_base_url}}/publisher/term/grant",
+          "host": [
+            "{{api_base_url}}"
+          ],
+          "path": [
+            "publisher",
+            "term",
+            "grant"
+          ]
+        },
+        "description": "Grants a term (site license) to a user. The user must exist first."
+      },
+      "response": []
+    },
+    {
+      "name": "3. Get User by Email",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "api_token",
+              "value": "{{api_token}}",
+              "type": "text"
+            },
+            {
+              "key": "aid",
+              "value": "{{app_id}}",
+              "type": "text"
+            },
+            {
+              "key": "email",
+              "value": "sarah.johnson@university.edu",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{api_base_url}}/publisher/user/get",
+          "host": [
+            "{{api_base_url}}"
+          ],
+          "path": [
+            "publisher",
+            "user",
+            "get"
+          ]
+        },
+        "description": "Retrieves user details by email address."
+      },
+      "response": []
+    },
+    {
+      "name": "4. List User Access",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "api_token",
+              "value": "{{api_token}}",
+              "type": "text"
+            },
+            {
+              "key": "aid",
+              "value": "{{app_id}}",
+              "type": "text"
+            },
+            {
+              "key": "user_uid",
+              "value": "USR001",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{api_base_url}}/publisher/user/access/list",
+          "host": [
+            "{{api_base_url}}"
+          ],
+          "path": [
+            "publisher",
+            "user",
+            "access",
+            "list"
+          ]
+        },
+        "description": "Lists all active access grants (terms) for a user."
+      },
+      "response": []
+    },
+    {
+      "name": "5. Revoke Term from User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "api_token",
+              "value": "{{api_token}}",
+              "type": "text"
+            },
+            {
+              "key": "aid",
+              "value": "{{app_id}}",
+              "type": "text"
+            },
+            {
+              "key": "term_id",
+              "value": "{{term_id}}",
+              "type": "text"
+            },
+            {
+              "key": "user_uid",
+              "value": "USR001",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{api_base_url}}/publisher/term/revoke",
+          "host": [
+            "{{api_base_url}}"
+          ],
+          "path": [
+            "publisher",
+            "term",
+            "revoke"
+          ]
+        },
+        "description": "Revokes a term (removes site license access) from a user."
+      },
+      "response": []
+    }
+  ]
+}
