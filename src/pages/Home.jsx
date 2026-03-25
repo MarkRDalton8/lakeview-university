@@ -36,6 +36,7 @@ export default function Home() {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [currentSection, setCurrentSection] = useState("home");
+  const [showNewsletter, setShowNewsletter] = useState(false);
 
   // Piano ID — Passive session detection (no modal triggered)
   useEffect(() => {
@@ -49,6 +50,25 @@ export default function Home() {
         setUserEmail(user.email || "");
       }
     }]);
+  }, []);
+
+  // Scroll detection for newsletter sticky square
+  useEffect(() => {
+    const handleScroll = () => {
+      const newsSection = document.getElementById('news');
+      if (newsSection) {
+        const rect = newsSection.getBoundingClientRect();
+        // Show newsletter when Campus News section is visible
+        if (rect.top <= window.innerHeight && rect.bottom >= 0) {
+          setShowNewsletter(true);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check on mount
+
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollToSection = (sectionId) => {
@@ -317,6 +337,34 @@ export default function Home() {
         <div>© 2026 Lakeview University · Digital Commons Platform</div>
         <div style={{ marginTop: 8, opacity: 0.6 }}>Demo site showcasing Piano integration for institutional access management</div>
       </footer>
+
+      {/* Sticky Square Newsletter - Piano will inject template here */}
+      {showNewsletter && (
+        <>
+          <style>{`
+            @keyframes slideLeft {
+              from {
+                transform: translateX(500px);
+              }
+              to {
+                transform: translateX(0);
+              }
+            }
+          `}</style>
+          <div
+            className="piano-newsletter-container"
+            style={{
+              position: 'fixed',
+              right: '40px',
+              bottom: '40px',
+              width: '350px',
+              zIndex: 1000,
+              transform: 'translateX(500px)',
+              animation: 'slideLeft 1s cubic-bezier(0.05, 0.36, 0.29, 1.1) forwards'
+            }}
+          ></div>
+        </>
+      )}
     </div>
   );
 }
