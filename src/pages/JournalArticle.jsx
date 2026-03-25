@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { JOURNALS } from '../data';
 
 export default function JournalArticle() {
@@ -9,18 +8,11 @@ export default function JournalArticle() {
   // Only use Piano inline content lock for this specific article
   const usePianoInlineLock = slug === 'computational-neuroscience';
 
-  useEffect(() => {
-    // Re-trigger Composer on route change for SPA
-    if (window.tp && window.tp.experience) {
-      window.tp.experience.execute();
-    }
-  }, [slug]);
-
   if (!article) {
     return (
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px' }}>
         <h1>Article Not Found</h1>
-        <Link to="/">← Back to Home</Link>
+        <a href="/">← Back to Home</a>
       </div>
     );
   }
@@ -53,9 +45,9 @@ export default function JournalArticle() {
         `}</style>
       )}
 
-      <Link to="/" style={{ color: '#0066cc', textDecoration: 'none' }}>
+      <a href="/" style={{ color: '#0066cc', textDecoration: 'none' }}>
         ← Back to Digital Commons
-      </Link>
+      </a>
 
       <div style={{ marginTop: '32px' }}>
         {article.locked && (

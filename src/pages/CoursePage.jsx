@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { COURSES } from '../data';
 
 export default function CoursePage() {
@@ -9,18 +8,11 @@ export default function CoursePage() {
   // Only use Piano inline content lock for this specific course
   const usePianoInlineLock = slug === 'cs-4710';
 
-  useEffect(() => {
-    // Re-trigger Composer on route change for SPA
-    if (window.tp && window.tp.experience) {
-      window.tp.experience.execute();
-    }
-  }, [slug]);
-
   if (!course) {
     return (
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px' }}>
         <h1>Course Not Found</h1>
-        <Link to="/">← Back to Home</Link>
+        <a href="/">← Back to Home</a>
       </div>
     );
   }
@@ -53,9 +45,9 @@ export default function CoursePage() {
         `}</style>
       )}
 
-      <Link to="/" style={{ color: '#0066cc', textDecoration: 'none' }}>
+      <a href="/" style={{ color: '#0066cc', textDecoration: 'none' }}>
         ← Back to Digital Commons
-      </Link>
+      </a>
 
       <div style={{ marginTop: '32px' }}>
         {course.locked && (

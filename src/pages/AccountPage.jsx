@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function AccountPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -148,12 +148,12 @@ export default function AccountPage() {
             </div>
           </div>
           <nav style={styles.nav}>
-            <Link to="/" style={styles.navLink(false)}>Home</Link>
-            <Link to="/#journals" style={styles.navLink(false)}>Journals</Link>
-            <Link to="/#courses" style={styles.navLink(false)}>Courses</Link>
-            <Link to="/#library" style={styles.navLink(false)}>Library</Link>
-            <Link to="/#news" style={styles.navLink(false)}>Campus News</Link>
-            {isLoggedIn && <Link to="/account" style={styles.navLink(true)}>My Account</Link>}
+            <a href="/" style={styles.navLink(false)}>Home</a>
+            <a href="/#journals" style={styles.navLink(false)}>Journals</a>
+            <a href="/#courses" style={styles.navLink(false)}>Courses</a>
+            <a href="/#library" style={styles.navLink(false)}>Library</a>
+            <a href="/#news" style={styles.navLink(false)}>Campus News</a>
+            {isLoggedIn && <a href="/account" style={styles.navLink(true)}>My Account</a>}
           </nav>
           <div style={styles.authArea}>
             {!isLoggedIn ? (

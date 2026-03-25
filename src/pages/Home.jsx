@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { JOURNALS, COURSES, LIBRARY, NEWS } from '../data';
 
 const LockBadge = ({ locked }) => (
@@ -16,7 +15,7 @@ const LockBadge = ({ locked }) => (
 );
 
 const ContentCard = ({ children, to, style }) => (
-  <Link to={to} style={{
+  <a href={to} style={{
     display: 'block',
     background: "white", borderRadius: 8, padding: "24px 28px",
     border: "1px solid #E2DDD5",
@@ -29,7 +28,7 @@ const ContentCard = ({ children, to, style }) => (
   onMouseLeave={e => { e.currentTarget.style.borderColor = "#E2DDD5"; e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.04)"; }}
   >
     {children}
-  </Link>
+  </a>
 );
 
 export default function Home() {
@@ -179,7 +178,7 @@ export default function Home() {
             <button style={styles.navBtn(currentSection === 'courses')} onClick={() => scrollToSection('courses')}>Courses</button>
             <button style={styles.navBtn(currentSection === 'library')} onClick={() => scrollToSection('library')}>Library</button>
             <button style={styles.navBtn(currentSection === 'news')} onClick={() => scrollToSection('news')}>Campus News</button>
-            {isLoggedIn && <Link to="/account" style={{ ...styles.navBtn(false), textDecoration: 'none' }}>My Account</Link>}
+            {isLoggedIn && <a href="/account" style={{ ...styles.navBtn(false), textDecoration: 'none' }}>My Account</a>}
           </nav>
           <div style={styles.authArea}>
             {!isLoggedIn ? (
