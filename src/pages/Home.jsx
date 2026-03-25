@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { JOURNALS, COURSES, LIBRARY, NEWS } from '../data';
 
@@ -35,11 +35,39 @@ const ContentCard = ({ children, to, style }) => (
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasLicense, setHasLicense] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLicenseModal, setShowLicenseModal] = useState(false);
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [currentSection, setCurrentSection] = useState("home");
+
+  // Piano ID — Session detection + login/logout event listeners
+  useEffect(() => {
+    const tp = window.tp || [];
+    tp.push(["init", function() {
+      // Pick up existing session (returning user / page refresh)
+      const user = window.tp.pianoId.getUser();
+      if (user) {
+        setIsLoggedIn(true);
+        setUserName((user.firstName || "") + " " + (user.lastName || ""));
+        setUserEmail(user.email || "");
+      }
+
+      // Listen for login/logout events going forward
+      window.tp.pianoId.show({
+        loggedIn: function(data) {
+          setIsLoggedIn(true);
+          setUserName((data.user.firstName || "") + " " + (data.user.lastName || ""));
+          setUserEmail(data.user.email || "");
+        },
+        loggedOut: function() {
+          setIsLoggedIn(false);
+          setHasLicense(false);
+          setUserName("");
+          setUserEmail("");
+        }
+      });
+    }]);
+  }, []);
 
   const scrollToSection = (sectionId) => {
     setCurrentSection(sectionId);
@@ -54,21 +82,19 @@ export default function Home() {
   };
 
   const handleLogin = () => {
-    setShowLoginModal(true);
+    if (window.tp && window.tp.pianoId) {
+      window.tp.pianoId.show({ screen: "login" });
+    }
   };
 
   const handleLogout = () => {
+    if (window.tp && window.tp.pianoId) {
+      window.tp.pianoId.logout();
+    }
     setIsLoggedIn(false);
     setHasLicense(false);
     setUserName("");
     setUserEmail("");
-  };
-
-  const handleMockLogin = () => {
-    setIsLoggedIn(true);
-    setUserName("Sarah Mitchell");
-    setUserEmail("s.mitchell@lakeview.edu");
-    setShowLoginModal(false);
   };
 
   const activateLicense = () => {
@@ -367,22 +393,6 @@ export default function Home() {
         <div>© 2026 Lakeview University · Digital Commons Platform</div>
         <div style={{ marginTop: 8, opacity: 0.6 }}>Demo site showcasing Piano integration for institutional access management</div>
       </footer>
-
-      {/* Login Modal */}
-      {showLoginModal && (
-        <div style={styles.overlay} onClick={() => setShowLoginModal(false)}>
-          <div style={styles.modal} onClick={e => e.stopPropagation()}>
-            <h2 style={styles.modalTitle}>Sign In</h2>
-            <p style={styles.modalSub}>Access your Lakeview University account</p>
-            <input type="email" placeholder="Email address" style={styles.input} defaultValue="s.mitchell@lakeview.edu" />
-            <input type="password" placeholder="Password" style={styles.input} defaultValue="••••••••" />
-            <button style={styles.modalBtn} onClick={handleMockLogin}>Sign In (Mock)</button>
-            <p style={{ textAlign: "center", fontSize: 12, color: "#8A8580", marginTop: 16 }}>
-              In production, this would use Piano ID
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* License Modal */}
       {showLicenseModal && (
