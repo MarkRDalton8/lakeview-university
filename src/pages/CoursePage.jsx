@@ -5,9 +5,6 @@ export default function CoursePage() {
   const { slug } = useParams();
   const course = COURSES.find(c => c.slug === slug);
 
-  // Only use Piano inline content lock for this specific course
-  const usePianoInlineLock = slug === 'cs-4710';
-
   if (!course) {
     return (
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px' }}>
@@ -19,7 +16,8 @@ export default function CoursePage() {
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px', background: '#FAF8F5', minHeight: '100vh' }}>
-      {usePianoInlineLock && (
+      {/* Piano inline lock CSS - for all locked courses */}
+      {course.locked && (
         <style>{`
           .piano-container--active ~ * {
             display: none;
@@ -61,7 +59,7 @@ export default function CoursePage() {
             fontWeight: 'bold',
             marginBottom: '16px'
           }}>
-            🔒 ENROLLMENT REQUIRED
+            🔒 LICENSE REQUIRED
           </div>
         )}
 
@@ -99,61 +97,43 @@ export default function CoursePage() {
           </p>
         </div>
 
-        {/* Piano inline lock pattern - only for cs-4710 */}
-        {usePianoInlineLock && course.locked && <div className="piano-container"></div>}
+        {/* Piano inline lock container - Composer will inject paywall here for locked courses */}
+        {course.locked && <div className="piano-container"></div>}
 
-        {/* Conditional rendering based on lock status and pattern */}
-        {course.locked && !usePianoInlineLock ? (
-          <div style={{
-            padding: '40px',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            borderRadius: '8px',
-            textAlign: 'center',
-            marginTop: '40px'
-          }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔒</div>
-            <h2 style={{ marginBottom: '16px' }}>Course Access Required</h2>
-            <p style={{ marginBottom: '24px', opacity: 0.9 }}>
-              Subscribe to Lakeview Digital Commons to access course materials and lectures.
-            </p>
-            <div id="piano-offer-container"></div>
-          </div>
-        ) : (
-          <div style={{ lineHeight: '1.8', fontSize: '16px' }}>
-            <h2 style={{ marginTop: '32px', marginBottom: '16px' }}>Course Materials</h2>
-            <ul style={{ lineHeight: '2', marginLeft: '20px', marginBottom: '24px' }}>
-              <li>Week 1: Introduction & Fundamentals</li>
-              <li>Week 2: Core Concepts & Theory</li>
-              <li>Week 3: Advanced Topics</li>
-              <li>Week 4: Practical Applications</li>
-              <li>Week 5: Case Studies</li>
-              <li>Week 6: Group Project</li>
-              <li>Week 7: Advanced Techniques</li>
-              <li>Week 8: Real-World Examples</li>
-            </ul>
+        {/* Course content - always visible, Composer will hide if access not granted */}
+        <div style={{ lineHeight: '1.8', fontSize: '16px' }}>
+          <h2 style={{ marginTop: '32px', marginBottom: '16px' }}>Course Materials</h2>
+          <ul style={{ lineHeight: '2', marginLeft: '20px', marginBottom: '24px' }}>
+            <li>Week 1: Introduction & Fundamentals</li>
+            <li>Week 2: Core Concepts & Theory</li>
+            <li>Week 3: Advanced Topics</li>
+            <li>Week 4: Practical Applications</li>
+            <li>Week 5: Case Studies</li>
+            <li>Week 6: Group Project</li>
+            <li>Week 7: Advanced Techniques</li>
+            <li>Week 8: Real-World Examples</li>
+          </ul>
 
-            <h2 style={{ marginTop: '32px', marginBottom: '16px' }}>Learning Objectives</h2>
-            <p style={{ marginBottom: '16px' }}>
-              By the end of this course, students will be able to apply core principles, analyze complex problems,
-              and develop practical solutions using industry-standard tools and methodologies.
-            </p>
+          <h2 style={{ marginTop: '32px', marginBottom: '16px' }}>Learning Objectives</h2>
+          <p style={{ marginBottom: '16px' }}>
+            By the end of this course, students will be able to apply core principles, analyze complex problems,
+            and develop practical solutions using industry-standard tools and methodologies.
+          </p>
 
-            <h2 style={{ marginTop: '32px', marginBottom: '16px' }}>Assessments</h2>
-            <ul style={{ lineHeight: '2', marginLeft: '20px', marginBottom: '24px' }}>
-              <li>Weekly quizzes (20%)</li>
-              <li>Midterm exam (25%)</li>
-              <li>Group project (30%)</li>
-              <li>Final exam (25%)</li>
-            </ul>
+          <h2 style={{ marginTop: '32px', marginBottom: '16px' }}>Assessments</h2>
+          <ul style={{ lineHeight: '2', marginLeft: '20px', marginBottom: '24px' }}>
+            <li>Weekly quizzes (20%)</li>
+            <li>Midterm exam (25%)</li>
+            <li>Group project (30%)</li>
+            <li>Final exam (25%)</li>
+          </ul>
 
-            <h2 style={{ marginTop: '32px', marginBottom: '16px' }}>Required Readings</h2>
-            <p style={{ marginBottom: '16px' }}>
-              All course readings will be made available through the Digital Commons library. Additional resources
-              and supplementary materials will be posted to the course portal throughout the semester.
-            </p>
-          </div>
-        )}
+          <h2 style={{ marginTop: '32px', marginBottom: '16px' }}>Required Readings</h2>
+          <p style={{ marginBottom: '16px' }}>
+            All course readings will be made available through the Digital Commons library. Additional resources
+            and supplementary materials will be posted to the course portal throughout the semester.
+          </p>
+        </div>
       </div>
     </div>
   );

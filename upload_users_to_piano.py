@@ -115,6 +115,34 @@ def add_user_to_contract(email: str, first_name: str, last_name: str) -> Dict:
         return {'error': str(e), 'user_email': email}
 
 
+def invite_user(contract_user_id: str, email: str = None) -> Dict:
+    """
+    Send invitation email to a contract user.
+
+    Args:
+        contract_user_id: The contract user's ID (required by Piano)
+        email: User's email (for logging only)
+
+    Returns:
+        API response as dictionary
+    """
+    endpoint = f'{API_BASE_URL}/publisher/licensing/contractUser/invite'
+
+    payload = {
+        'api_token': API_TOKEN,
+        'aid': APP_ID,
+        'contract_id': CONTRACT_ID,
+        'contract_user_id': contract_user_id,
+    }
+
+    try:
+        response = requests.post(endpoint, data=payload)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        return {'error': str(e), 'user_email': email}
+
+
 def redeem_contract_access(email: str) -> Dict:
     """
     Redeem access through the contract for a specific user.
@@ -417,12 +445,31 @@ def main():
 
         print(f"  ✅ User added to contract")
 
-        # Step 2: Redeem access for user
+        # Extract contract_user_id for subsequent API calls
+        contract_user_id = None
+        if 'contract_user' in contract_user_response:
+            contract_user_id = contract_user_response['contract_user'].get('contract_user_id')
+
+        # Step 2: Send invitation email (conditionally based on newsletter_opt_in)
+        if contract_user_id:
+            if user.get('newsletter_opt_in', False):
+                invite_response = invite_user(contract_user_id, user['email'])
+
+                if 'error' in invite_response:
+                    print(f"  ⚠️  Warning: Failed to send invitation email: {invite_response['error']}")
+                else:
+                    print(f"  ✅ Invitation email sent")
+            else:
+                print(f"  ⏭️  Invitation email skipped (newsletter_opt_in=false)")
+        else:
+            print(f"  ⚠️  Warning: No contract_user_id found, skipping invitation email")
+
+        # Step 3: Redeem access for user (optional - may fail for non-Piano ID users)
         redeem_response = redeem_contract_access(user['email'])
 
         if 'error' in redeem_response:
             print(f"  ⚠️  Warning: Failed to redeem access: {redeem_response['error']}")
-            print(f"      User is in contract but in 'pending' status (for demo this is OK)")
+            print(f"      User is in contract but in 'pending' status (invitation email sent)")
             results['failed'].append({
                 'email': user['email'],
                 'error': f"Access redemption failed: {redeem_response['error']}"

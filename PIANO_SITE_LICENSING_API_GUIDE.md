@@ -113,12 +113,67 @@ api_token=YOUR_TOKEN
 
 **What Happens:**
 - User is added to the contract in "PENDING" status
-- Piano sends an invitation email to the user
 - User can redeem access via the landing page
+- Note: The create endpoint does NOT automatically send an invitation email
+- You must call the invite endpoint separately (see below)
 
 ---
 
-### 2. Redeem Contract Access
+### 2. Send Invitation Email
+
+**Endpoint:** `POST /publisher/licensing/contractUser/invite`
+
+**Purpose:** Send an invitation email to a contract user
+
+**Required Parameters:**
+- `api_token` - Your API token
+- `aid` - Application ID
+- `contract_id` - The contract ID
+- `contract_user_id` - The contract user's ID (from create response)
+
+**Example Request:**
+```http
+POST https://api.tinypass.com/api/v3/publisher/licensing/contractUser/invite
+Content-Type: application/x-www-form-urlencoded
+
+api_token=YOUR_TOKEN
+&aid=QiNgMM49pu
+&contract_id=TMQ29SR23ZTA
+&contract_user_id=CUMG693V0I2V
+```
+
+**Example Response:**
+```json
+{
+  "code": 0
+}
+```
+
+**What Happens:**
+- Invitation email is sent to the user's email address
+- Email contains a link to the redemption landing page
+- User can click the link to activate their access
+- This is the recommended workflow for site license provisioning
+
+**Best Practice:**
+Call this endpoint after creating a contract user to send them their invitation email.
+
+**Conditional Sending:**
+You may want to conditionally send invitations based on user preferences:
+- Check a `newsletter_opt_in` or `email_preferences` field
+- Only send to users who have consented to receive emails
+- Respect user communication preferences and privacy settings
+
+**Example (Python):**
+```python
+# Only send invitation if user opted in
+if user.get('newsletter_opt_in', False):
+    invite_response = invite_user(contract_user_id, user['email'])
+```
+
+---
+
+### 3. Redeem Contract Access
 
 **Endpoint:** `POST /publisher/licensing/contract/redeem`
 
@@ -145,7 +200,7 @@ api_token=YOUR_TOKEN
 
 ---
 
-### 3. List Contract Users
+### 4. List Contract Users
 
 **Endpoint:** `POST /publisher/licensing/contractUser/list`
 
@@ -205,7 +260,7 @@ api_token=YOUR_TOKEN
 
 ---
 
-### 4. Remove User from Contract
+### 5. Remove User from Contract
 
 **Endpoint:** `POST /publisher/licensing/contractUser/removeAndRevoke`
 
@@ -248,17 +303,18 @@ api_token=YOUR_TOKEN
 
 1. **Prepare CSV file** with user data:
    ```csv
-   email,first_name,last_name
-   sarah.johnson@university.edu,Sarah,Johnson
-   michael.chen@university.edu,Michael,Chen
+   email,first_name,last_name,newsletter_opt_in
+   sarah.johnson@university.edu,Sarah,Johnson,true
+   michael.chen@university.edu,Michael,Chen,false
    ```
 
-2. **For each user, call:**
-   - `POST /publisher/licensing/contractUser/create`
+2. **For each user:**
+   - Call `POST /publisher/licensing/contractUser/create`
+   - If user opted in, call `POST /publisher/licensing/contractUser/invite`
 
 3. **Result:**
    - Users added to contract in PENDING status
-   - Invitation emails sent automatically
+   - Invitation emails sent only to users who opted in
    - Users can redeem via landing page
 
 **Python Example:**
@@ -274,6 +330,7 @@ BASE_URL = 'https://api.tinypass.com/api/v3'
 with open('users.csv', 'r') as f:
     reader = csv.DictReader(f)
     for user in reader:
+        # Step 1: Add user to contract
         response = requests.post(
             f'{BASE_URL}/publisher/licensing/contractUser/create',
             data={
@@ -285,7 +342,25 @@ with open('users.csv', 'r') as f:
                 'last_name': user['last_name']
             }
         )
-        print(f"Added: {user['email']} - Status: {response.status_code}")
+
+        # Step 2: Send invitation if user opted in
+        if response.status_code == 200 and user.get('newsletter_opt_in') == 'true':
+            data = response.json()
+            contract_user_id = data['contract_user'].get('contract_user_id')
+
+            if contract_user_id:
+                requests.post(
+                    f'{BASE_URL}/publisher/licensing/contractUser/invite',
+                    data={
+                        'api_token': API_TOKEN,
+                        'aid': AID,
+                        'contract_id': CONTRACT_ID,
+                        'contract_user_id': contract_user_id
+                    }
+                )
+                print(f"Added: {user['email']} - Invitation sent")
+            else:
+                print(f"Added: {user['email']} - No invitation (opted out)")
 ```
 
 ---

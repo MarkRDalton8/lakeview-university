@@ -144,7 +144,107 @@
       "response": []
     },
     {
-      "name": "3. Redeem Contract Access for User",
+      "name": "3. Send Invitation Email",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "api_token",
+              "value": "{{api_token}}",
+              "type": "text"
+            },
+            {
+              "key": "aid",
+              "value": "{{app_id}}",
+              "type": "text"
+            },
+            {
+              "key": "contract_id",
+              "value": "{{contract_id}}",
+              "type": "text"
+            },
+            {
+              "key": "contract_user_id",
+              "value": "CUMG693V0I2V",
+              "type": "text",
+              "description": "Get this from the response of step 2 (contract_user.contract_user_id)"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{api_base_url}}/publisher/licensing/contractUser/invite",
+          "host": [
+            "{{api_base_url}}"
+          ],
+          "path": [
+            "publisher",
+            "licensing",
+            "contractUser",
+            "invite"
+          ]
+        },
+        "description": "Sends invitation email to a contract user. The email contains a link to the redemption landing page."
+      },
+      "response": []
+    },
+    {
+      "name": "4. List Contract Users",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "api_token",
+              "value": "{{api_token}}",
+              "type": "text"
+            },
+            {
+              "key": "aid",
+              "value": "{{app_id}}",
+              "type": "text"
+            },
+            {
+              "key": "contract_id",
+              "value": "{{contract_id}}",
+              "type": "text"
+            },
+            {
+              "key": "limit",
+              "value": "100",
+              "type": "text",
+              "description": "Number of results per page (default: 100)"
+            },
+            {
+              "key": "offset",
+              "value": "0",
+              "type": "text",
+              "description": "Pagination offset (default: 0)"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{api_base_url}}/publisher/licensing/contractUser/list",
+          "host": [
+            "{{api_base_url}}"
+          ],
+          "path": [
+            "publisher",
+            "licensing",
+            "contractUser",
+            "list"
+          ]
+        },
+        "description": "Lists all users in a site license contract. Returns contract_user_id needed for other operations."
+      },
+      "response": []
+    },
+    {
+      "name": "5. Redeem Contract Access for User",
       "request": {
         "method": "POST",
         "header": [],
@@ -190,7 +290,7 @@
       "response": []
     },
     {
-      "name": "4. Get User by Email",
+      "name": "6. Get User by Email",
       "request": {
         "method": "POST",
         "header": [],
@@ -230,7 +330,7 @@
       "response": []
     },
     {
-      "name": "5. List User Access",
+      "name": "7. List User Access",
       "request": {
         "method": "POST",
         "header": [],
@@ -271,7 +371,7 @@
       "response": []
     },
     {
-      "name": "6. Remove User from Contract",
+      "name": "8. Remove User from Contract",
       "request": {
         "method": "POST",
         "header": [],
@@ -294,14 +394,15 @@
               "type": "text"
             },
             {
-              "key": "email",
-              "value": "sarah.johnson@university.edu",
-              "type": "text"
+              "key": "contract_user_id",
+              "value": "CUMG693V0I2V",
+              "type": "text",
+              "description": "Get this from the list endpoint (contract_user_id field)"
             }
           ]
         },
         "url": {
-          "raw": "{{api_base_url}}/publisher/licensing/contractUser/delete",
+          "raw": "{{api_base_url}}/publisher/licensing/contractUser/removeAndRevoke",
           "host": [
             "{{api_base_url}}"
           ],
@@ -309,10 +410,10 @@
             "publisher",
             "licensing",
             "contractUser",
-            "delete"
+            "removeAndRevoke"
           ]
         },
-        "description": "Removes a user from a site license contract. Useful for demo cleanup."
+        "description": "Removes and revokes a user from a site license contract. Works for both PENDING and ACTIVE users. Useful for demo cleanup."
       },
       "response": []
     }
