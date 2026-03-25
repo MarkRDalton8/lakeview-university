@@ -14,6 +14,12 @@
       tp.push(["setAid", "QiNgMM49pu"]);
       tp.push(["setUsePianoIdUserProvider", true]);
       tp.push(["init", function() {
+        // Reload page after successful login so My Account link appears
+        tp.pianoId.show({
+          loggedIn: function() {
+            window.location.reload();
+          }
+        });
         tp.experience.execute();
       }]);
     </script>
