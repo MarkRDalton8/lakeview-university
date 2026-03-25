@@ -24,50 +24,12 @@ export default function NewsArticle() {
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px', background: '#FAF8F5', minHeight: '100vh' }}>
-      <style>{`
-        .piano-container--active ~ * {
-          display: none;
-        }
-        .piano-container--active {
-          position: relative;
-        }
-        .piano-container--active::before {
-          content: "";
-          position: absolute;
-          bottom: 100%;
-          left: 0;
-          right: 0;
-          height: 200px;
-          pointer-events: none;
-          background-image: linear-gradient(
-            to top,
-            #FAF8F5 0%,
-            #FAF8F5 20%,
-            rgba(250, 248, 245, 0) 100%
-          );
-        }
-      `}</style>
-
       <Link to="/" style={{ color: '#0066cc', textDecoration: 'none' }}>
         ← Back to Digital Commons
       </Link>
 
       <div style={{ marginTop: '32px' }}>
-        {article.locked && (
-          <div style={{
-            display: 'inline-block',
-            padding: '4px 12px',
-            background: '#ff4444',
-            color: 'white',
-            borderRadius: '4px',
-            fontSize: '12px',
-            fontWeight: 'bold',
-            marginBottom: '16px'
-          }}>
-            🔒 SUBSCRIBER ACCESS REQUIRED
-          </div>
-        )}
-
+        {/* News articles are all open access - no lock badge */}
         <div style={{
           display: 'inline-block',
           padding: '4px 12px',
@@ -76,8 +38,7 @@ export default function NewsArticle() {
           borderRadius: '4px',
           fontSize: '12px',
           fontWeight: 'bold',
-          marginBottom: '16px',
-          marginLeft: article.locked ? '8px' : '0'
+          marginBottom: '16px'
         }}>
           {article.category}
         </div>
@@ -90,7 +51,7 @@ export default function NewsArticle() {
           {article.date}
         </div>
 
-        {/* Teaser: First 2-3 paragraphs are always visible */}
+        {/* All news content is freely accessible */}
         <p style={{ fontSize: '18px', lineHeight: '1.6', marginBottom: '24px', color: '#333' }}>
           {article.excerpt}
         </p>
@@ -101,10 +62,6 @@ export default function NewsArticle() {
           The initiative represents a major milestone in the university's ongoing commitment to excellence.
         </p>
 
-        {/* Piano inline template container — only on locked content */}
-        {article.locked && <div className="piano-container"></div>}
-
-        {/* Remaining article content — hidden when piano-container--active */}
         <p style={{ fontSize: '16px', lineHeight: '1.8', marginBottom: '24px' }}>
           "This is a transformative moment for our community," said University President Dr. Sarah Chen.
           "The impact of this initiative will be felt for generations to come, as we continue to push
