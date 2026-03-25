@@ -34,8 +34,6 @@ const ContentCard = ({ children, to, style }) => (
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [hasLicense, setHasLicense] = useState(false);
-  const [showLicenseModal, setShowLicenseModal] = useState(false);
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [currentSection, setCurrentSection] = useState("home");
@@ -61,7 +59,6 @@ export default function Home() {
         },
         loggedOut: function() {
           setIsLoggedIn(false);
-          setHasLicense(false);
           setUserName("");
           setUserEmail("");
         }
@@ -92,17 +89,9 @@ export default function Home() {
       window.tp.pianoId.logout();
     }
     setIsLoggedIn(false);
-    setHasLicense(false);
     setUserName("");
     setUserEmail("");
   };
-
-  const activateLicense = () => {
-    setHasLicense(true);
-    setShowLicenseModal(false);
-  };
-
-  const canAccess = (locked) => !locked || hasLicense;
 
   const styles = {
     app: { fontFamily: "'DM Sans', sans-serif", background: "#FAF8F5", minHeight: "100vh", color: "#1A1A1A" },
@@ -160,11 +149,6 @@ export default function Home() {
       padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer",
       fontFamily: "'DM Sans', sans-serif",
     },
-    licenseBanner: {
-      background: hasLicense ? "linear-gradient(90deg, #227845, #2A9D5C)" : "linear-gradient(90deg, #8E242A, #B8393F)",
-      borderRadius: 10, padding: "16px 28px", marginBottom: 32,
-      display: "flex", alignItems: "center", justifyContent: "space-between", color: "white",
-    },
     sectionTitle: { fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700, marginBottom: 8, color: "#1B1B3A", marginTop: 48 },
     sectionSub: { fontSize: 14, color: "#6B6560", marginBottom: 28, lineHeight: 1.5 },
     grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 20, marginBottom: 24 },
@@ -183,26 +167,6 @@ export default function Home() {
     },
     statNum: { fontFamily: "'Playfair Display', serif", fontSize: 32, fontWeight: 700, color: "#C4A44A" },
     statLabel: { fontSize: 11, color: "rgba(255,255,255,0.6)", letterSpacing: "1px", textTransform: "uppercase", marginTop: 4 },
-    overlay: {
-      position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 200,
-      display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)",
-    },
-    modal: {
-      background: "white", borderRadius: 16, padding: "40px 44px", maxWidth: 440, width: "100%",
-      boxShadow: "0 24px 80px rgba(0,0,0,0.2)",
-    },
-    modalTitle: { fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 700, marginBottom: 8 },
-    modalSub: { fontSize: 13, color: "#6B6560", marginBottom: 28, lineHeight: 1.5 },
-    input: {
-      width: "100%", padding: "12px 16px", border: "1px solid #D8D3CC", borderRadius: 8,
-      fontSize: 14, fontFamily: "'DM Sans', sans-serif", marginBottom: 12, boxSizing: "border-box",
-      outline: "none", background: "#FAF8F5",
-    },
-    modalBtn: {
-      width: "100%", padding: "14px", background: "#1B1B3A", color: "white",
-      border: "none", borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: "pointer",
-      fontFamily: "'DM Sans', sans-serif",
-    },
     footer: {
       background: "#1B1B3A", color: "rgba(255,255,255,0.5)", padding: "40px 32px",
       textAlign: "center", fontSize: 12, letterSpacing: "0.3px",
@@ -267,8 +231,6 @@ export default function Home() {
             <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
               {!isLoggedIn ? (
                 <button style={styles.heroCta} onClick={handleLogin}>Sign In with Piano ID</button>
-              ) : !hasLicense ? (
-                <button style={styles.heroCta} onClick={() => setShowLicenseModal(true)}>Activate Site License</button>
               ) : (
                 <span style={{ ...styles.heroCta, display: 'inline-block' }}>Browse content below →</span>
               )}
@@ -289,29 +251,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* License Banner */}
-        {isLoggedIn && (
-          <div style={styles.licenseBanner}>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>
-                {hasLicense ? "✓ Site License Active" : "Site License Not Activated"}
-              </div>
-              <div style={{ fontSize: 12, opacity: 0.85 }}>
-                {hasLicense
-                  ? "You have full access to all Lakeview University digital resources."
-                  : "Activate your institutional license to access premium content."}
-              </div>
-            </div>
-            {!hasLicense && (
-              <button onClick={() => setShowLicenseModal(true)} style={{
-                background: "white", color: "#8E242A", border: "none", borderRadius: 6,
-                padding: "10px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer",
-                fontFamily: "'DM Sans', sans-serif",
-              }}>Activate License</button>
-            )}
-          </div>
-        )}
-
         {/* Journals */}
         <h2 id="journals" style={styles.sectionTitle}>Academic Journals</h2>
         <p style={styles.sectionSub}>Peer-reviewed research from Lakeview faculty and affiliated scholars</p>
@@ -320,12 +259,12 @@ export default function Home() {
             <ContentCard key={j.id} to={`/journals/${j.slug}`}>
               <div style={{ marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={styles.tag("blue")}>{j.volume}</span>
-                <LockBadge locked={j.locked && !hasLicense} />
+                <LockBadge locked={j.locked} />
               </div>
               <h3 style={styles.cardTitle}>{j.title}</h3>
               <div style={styles.cardMeta}>{j.authors}</div>
               <div style={styles.cardMeta}>{j.journal} · {j.year}</div>
-              <p style={styles.cardBody}>{canAccess(j.locked) ? j.abstract.substring(0, 100) + "..." : j.abstract.substring(0, 60) + "..."}</p>
+              <p style={styles.cardBody}>{j.abstract.substring(0, 100) + "..."}</p>
             </ContentCard>
           ))}
         </div>
@@ -338,7 +277,7 @@ export default function Home() {
             <ContentCard key={c.id} to={`/courses/${c.slug}`}>
               <div style={{ marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={styles.tag("green")}>{c.code}</span>
-                <LockBadge locked={c.locked && !hasLicense} />
+                <LockBadge locked={c.locked} />
               </div>
               <h3 style={styles.cardTitle}>{c.title}</h3>
               <div style={styles.cardMeta}>{c.instructor} · {c.term}</div>
@@ -358,7 +297,7 @@ export default function Home() {
             <ContentCard key={b.id} to={`/library/${b.slug}`}>
               <div style={{ marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={styles.tag("red")}>{b.type}</span>
-                <LockBadge locked={b.locked && !hasLicense} />
+                <LockBadge locked={b.locked} />
               </div>
               <h3 style={styles.cardTitle}>{b.title}</h3>
               <div style={styles.cardMeta}>{b.author}</div>
@@ -378,7 +317,7 @@ export default function Home() {
             <ContentCard key={n.id} to={`/news/${n.slug}`}>
               <div style={{ marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={styles.tag("blue")}>{n.category}</span>
-                <LockBadge locked={n.locked && !hasLicense} />
+                <LockBadge locked={n.locked} />
               </div>
               <h3 style={styles.cardTitle}>{n.title}</h3>
               <div style={styles.cardMeta}>{n.date}</div>
@@ -393,21 +332,6 @@ export default function Home() {
         <div>© 2026 Lakeview University · Digital Commons Platform</div>
         <div style={{ marginTop: 8, opacity: 0.6 }}>Demo site showcasing Piano integration for institutional access management</div>
       </footer>
-
-      {/* License Modal */}
-      {showLicenseModal && (
-        <div style={styles.overlay} onClick={() => setShowLicenseModal(false)}>
-          <div style={styles.modal} onClick={e => e.stopPropagation()}>
-            <h2 style={styles.modalTitle}>Activate Site License</h2>
-            <p style={styles.modalSub}>Enter your institutional license key to unlock all content</p>
-            <input type="text" placeholder="License Key" style={styles.input} defaultValue="LAKEVIEW-2026-DEMO" />
-            <button style={styles.modalBtn} onClick={activateLicense}>Activate License (Mock)</button>
-            <p style={{ textAlign: "center", fontSize: 12, color: "#8A8580", marginTop: 16 }}>
-              In production, this would use Piano's offer flow
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
