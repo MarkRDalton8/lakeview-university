@@ -212,6 +212,15 @@
     </footer>
 
     <script>
+        // Piano initialization
+        var tp = window.tp || [];
+        tp.push(["setAid", "QiNgMM49pu"]);
+        tp.push(["setUsePianoIdUserProvider", true]);
+        tp.push(["init", function() {
+            // Execute Composer to inject templates
+            tp.experience.execute();
+        }]);
+
         // Piano ID Login
         document.getElementById('loginButton').addEventListener('click', function() {
             if (window.tp && window.tp.pianoId) {
