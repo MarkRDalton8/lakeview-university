@@ -1,39 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Crain Sandbox Composer Script
-    <script>(function(src){var a=document.createElement("script");a.type="text/javascript";a.async=true;a.src=src;var b=document.getElementsByTagName("script")[0];b.parentNode.insertBefore(a,b)})("https://sandbox.tinypass.com/xbuilder/experience/load?aid=I0E19dIwsu");
-    </script>
-    -->
-    <!-- Main Dashboard Composer script -->
-    <!-- Include the Piano SDK first -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site License Access — Lakeview University Digital Commons</title>
+    <meta name="description" content="Access your institutional site license for Lakeview University Digital Commons">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Piano SDK -->
     <script src="https://cdn.piano.io/sdk/tinypass.min.js"></script>
 
-    <script>(function(src){var a=document.createElement("script");a.type="text/javascript";a.async=true;a.src=src;var b=document.getElementsByTagName("script")[0];b.parentNode.insertBefore(a,b)})("https://experience.tinypass.com/xbuilder/experience/load?aid=QiNgMM49pu");
-    </script>
+    <!-- Piano Composer -->
+    <script>(function(src){var a=document.createElement("script");a.type="text/javascript";a.async=true;a.src=src;var b=document.getElementsByTagName("script")[0];b.parentNode.insertBefore(a,b)})("https://experience.tinypass.com/xbuilder/experience/load?aid=QiNgMM49pu");</script>
 
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/x-icon" href="images/piano.jpeg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #FAF8F5;
+            min-height: 100vh;
+            color: #1A1A1A;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #1B1B3A 0%, #2C1810 100%);
+            border-bottom: 3px solid #C4A44A;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #C4A44A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: #1B1B3A;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .logo-text {
+            color: white;
+        }
+
+        .logo-name {
+            font-size: 20px;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            letter-spacing: -0.3px;
+        }
+
+        .logo-sub {
+            font-size: 10px;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: #C4A44A;
+            font-weight: 500;
+        }
+
+        .auth-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .login-btn {
+            background: #C4A44A;
+            color: #1B1B3A;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            letter-spacing: 0.3px;
+            transition: all 0.2s ease;
+        }
+
+        .login-btn:hover {
+            opacity: 0.9;
+        }
+
+        .home-link {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            transition: all 0.2s ease;
+        }
+
+        .home-link:hover {
+            color: #C4A44A;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 32px 80px;
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #1B1B3A;
+            margin-bottom: 8px;
+        }
+
+        .page-sub {
+            font-size: 14px;
+            color: #6B6560;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        /* Site License Container */
+        #site-license-container {
+            min-height: 400px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #E2DDD5;
+            padding: 32px;
+        }
+
+        /* Footer */
+        footer {
+            background: #1B1B3A;
+            color: rgba(255,255,255,0.5);
+            padding: 40px 32px;
+            text-align: center;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+            margin-top: auto;
+        }
+
+        footer a {
+            color: #C4A44A;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar">
-        <ul>
-            <li><button id="logoutButton">Log Out</button></li>
-            <li><button id="loginButton">Log In</button></li>
-             <li><a href="myaccount.html">My Account</a></li>
-            <!-- <li><a href="login.html">Login</a></li> -->
-            <li><a href="subscribe.html">Subscribe</a></li>
-            <li><a href="index.html">Home</a></li>
-        </ul>
-    </nav>
+    <!-- Header -->
+    <header>
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-icon">L</div>
+                <div class="logo-text">
+                    <div class="logo-name">Lakeview University</div>
+                    <div class="logo-sub">Digital Commons</div>
+                </div>
+            </div>
+            <div class="auth-area">
+                <a href="/" class="home-link">← Back to Home</a>
+                <button class="login-btn" id="loginButton">Sign In</button>
+            </div>
+        </div>
+    </header>
 
-    <!-- Container for site license template -->
-    <div id="site-license-container" style="width: 100%; height: 100vh;"></div>
+    <!-- Main Content -->
+    <main>
+        <h1 class="page-title">Access Your Site License</h1>
+        <p class="page-sub">
+            Enter your institutional email address to activate your access to Lakeview University Digital Commons.
+        </p>
 
-    <!-- Include the Piano SDK
-    <script src="https://cdn.piano.io/sdk/tinypass.min.js"></script>
-    -->
+        <!-- Container for Piano site license template -->
+        <div id="site-license-container"></div>
+    </main>
 
+    <!-- Footer -->
+    <footer>
+        <div>© 2026 Lakeview University · Digital Commons Platform</div>
+        <div style="margin-top: 8px; opacity: 0.6;">
+            Demo site showcasing Piano integration for institutional access management
+        </div>
+    </footer>
+
+    <script>
+        // Piano ID Login
+        document.getElementById('loginButton').addEventListener('click', function() {
+            if (window.tp && window.tp.pianoId) {
+                window.tp.pianoId.show({ screen: "login" });
+            }
+        });
+    </script>
 </body>
 </html>
