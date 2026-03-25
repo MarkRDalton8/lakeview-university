@@ -6,12 +6,14 @@ import JournalArticle from './pages/JournalArticle'
 import CoursePage from './pages/CoursePage'
 import LibraryBook from './pages/LibraryBook'
 import NewsArticle from './pages/NewsArticle'
+import AccountPage from './pages/AccountPage'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/account" element={<AccountPage />} />
         <Route path="/journals/:slug" element={<JournalArticle />} />
         <Route path="/courses/:slug" element={<CoursePage />} />
         <Route path="/library/:slug" element={<LibraryBook />} />

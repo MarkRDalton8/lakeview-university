@@ -229,7 +229,7 @@ export default function Home() {
             <button style={styles.navBtn(currentSection === 'courses')} onClick={() => scrollToSection('courses')}>Courses</button>
             <button style={styles.navBtn(currentSection === 'library')} onClick={() => scrollToSection('library')}>Library</button>
             <button style={styles.navBtn(currentSection === 'news')} onClick={() => scrollToSection('news')}>Campus News</button>
-            {isLoggedIn && <button style={styles.navBtn(currentSection === 'account')} onClick={() => scrollToSection('account')}>My Account</button>}
+            {isLoggedIn && <Link to="/account" style={{ ...styles.navBtn(false), textDecoration: 'none' }}>My Account</Link>}
           </nav>
           <div style={styles.authArea}>
             {!isLoggedIn ? (
