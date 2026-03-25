@@ -14,17 +14,6 @@
       tp.push(["setAid", "QiNgMM49pu"]);
       tp.push(["setUsePianoIdUserProvider", true]);
       tp.push(["init", function() {
-        // Check if user was already logged in before registering callback
-        var wasLoggedIn = !!tp.pianoId.getUser();
-
-        // Reload page after successful login (only if they weren't already logged in)
-        tp.pianoId.show({
-          loggedIn: function() {
-            if (!wasLoggedIn) {
-              window.location.reload();
-            }
-          }
-        });
         tp.experience.execute();
       }]);
     </script>
