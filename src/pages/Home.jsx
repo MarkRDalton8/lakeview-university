@@ -39,6 +39,19 @@ export default function Home() {
   const [showLicenseModal, setShowLicenseModal] = useState(false);
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [currentSection, setCurrentSection] = useState("home");
+
+  const scrollToSection = (sectionId) => {
+    setCurrentSection(sectionId);
+    if (sectionId === 'home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
 
   const handleLogin = () => {
     setShowLoginModal(true);
@@ -85,6 +98,14 @@ export default function Home() {
     logoText: { color: "white" },
     logoName: { fontSize: 20, fontWeight: 700, fontFamily: "'Playfair Display', serif", letterSpacing: "-0.3px" },
     logoSub: { fontSize: 10, letterSpacing: "2.5px", textTransform: "uppercase", color: "#C4A44A", fontWeight: 500 },
+    nav: { display: "flex", gap: 0, alignItems: "center" },
+    navBtn: (active) => ({
+      background: "none", border: "none", color: active ? "#C4A44A" : "rgba(255,255,255,0.7)",
+      fontSize: 13, fontWeight: active ? 700 : 500, cursor: "pointer", padding: "8px 16px",
+      fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.3px",
+      borderBottom: active ? "2px solid #C4A44A" : "2px solid transparent",
+      transition: "all 0.2s ease",
+    }),
     authArea: { display: "flex", alignItems: "center", gap: 12 },
     loginBtn: {
       background: "#C4A44A", color: "#1B1B3A", border: "none", borderRadius: 6,
@@ -176,6 +197,14 @@ export default function Home() {
               <div style={styles.logoSub}>Digital Commons</div>
             </div>
           </div>
+          <nav style={styles.nav}>
+            <button style={styles.navBtn(currentSection === 'home')} onClick={() => scrollToSection('home')}>Home</button>
+            <button style={styles.navBtn(currentSection === 'journals')} onClick={() => scrollToSection('journals')}>Journals</button>
+            <button style={styles.navBtn(currentSection === 'courses')} onClick={() => scrollToSection('courses')}>Courses</button>
+            <button style={styles.navBtn(currentSection === 'library')} onClick={() => scrollToSection('library')}>Library</button>
+            <button style={styles.navBtn(currentSection === 'news')} onClick={() => scrollToSection('news')}>Campus News</button>
+            {isLoggedIn && <button style={styles.navBtn(currentSection === 'account')} onClick={() => scrollToSection('account')}>My Account</button>}
+          </nav>
           <div style={styles.authArea}>
             {!isLoggedIn ? (
               <button style={styles.loginBtn} onClick={handleLogin}>Sign In</button>
@@ -258,7 +287,7 @@ export default function Home() {
         )}
 
         {/* Journals */}
-        <h2 style={styles.sectionTitle}>Academic Journals</h2>
+        <h2 id="journals" style={styles.sectionTitle}>Academic Journals</h2>
         <p style={styles.sectionSub}>Peer-reviewed research from Lakeview faculty and affiliated scholars</p>
         <div style={styles.grid}>
           {JOURNALS.map(j => (
@@ -276,7 +305,7 @@ export default function Home() {
         </div>
 
         {/* Courses */}
-        <h2 style={styles.sectionTitle}>Online Courses</h2>
+        <h2 id="courses" style={styles.sectionTitle}>Online Courses</h2>
         <p style={styles.sectionSub}>Spring 2026 semester course materials and learning modules</p>
         <div style={styles.grid}>
           {COURSES.map(c => (
@@ -296,7 +325,7 @@ export default function Home() {
         </div>
 
         {/* Library */}
-        <h2 style={styles.sectionTitle}>Digital Library</h2>
+        <h2 id="library" style={styles.sectionTitle}>Digital Library</h2>
         <p style={styles.sectionSub}>Textbooks, reference materials, and academic collections</p>
         <div style={styles.grid}>
           {LIBRARY.map(b => (
@@ -316,7 +345,7 @@ export default function Home() {
         </div>
 
         {/* News */}
-        <h2 style={styles.sectionTitle}>Campus News</h2>
+        <h2 id="news" style={styles.sectionTitle}>Campus News</h2>
         <p style={styles.sectionSub}>Latest updates and announcements from Lakeview University</p>
         <div style={styles.grid}>
           {NEWS.map(n => (
