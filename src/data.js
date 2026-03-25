@@ -78,7 +78,7 @@ export const COURSES = [
     term: "Spring 2026",
     enrolled: 215,
     modules: 16,
-    locked: false
+    locked: true
   },
   {
     id: 4,
