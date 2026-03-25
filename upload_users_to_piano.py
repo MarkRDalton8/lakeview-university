@@ -142,23 +142,48 @@ def redeem_contract_access(email: str) -> Dict:
         return {'error': str(e), 'user_email': email}
 
 
-def delete_user_from_contract(email: str) -> Dict:
+def list_contract_users() -> Dict:
     """
-    Remove a user from a site license contract.
-
-    Args:
-        email: User's email address
+    List all users in a site license contract.
 
     Returns:
-        API response as dictionary
+        API response as dictionary with list of users
     """
-    endpoint = f'{API_BASE_URL}/publisher/licensing/contractUser/delete'
+    endpoint = f'{API_BASE_URL}/publisher/licensing/contractUser/list'
 
     payload = {
         'api_token': API_TOKEN,
         'aid': APP_ID,
         'contract_id': CONTRACT_ID,
-        'email': email,
+    }
+
+    try:
+        response = requests.post(endpoint, data=payload)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        return {'error': str(e)}
+
+
+def delete_user_from_contract(contract_user_id: str, email: str = None) -> Dict:
+    """
+    Remove and revoke a user from a site license contract.
+    Uses removeAndRevoke endpoint which works for both pending and redeemed users.
+
+    Args:
+        contract_user_id: The contract user's public ID (required by Piano)
+        email: User's email (for logging only)
+
+    Returns:
+        API response as dictionary
+    """
+    endpoint = f'{API_BASE_URL}/publisher/licensing/contractUser/removeAndRevoke'
+
+    payload = {
+        'api_token': API_TOKEN,
+        'aid': APP_ID,
+        'contract_id': CONTRACT_ID,
+        'contract_user_id': contract_user_id,
     }
 
     try:
@@ -214,40 +239,67 @@ def delete_all_users():
         return
 
     print()
-    print(f"📁 Reading users from: {CSV_FILE_PATH}")
-    try:
-        users = read_users_from_csv(CSV_FILE_PATH)
-        print(f"✅ Found {len(users)} users to delete")
-        print()
-    except FileNotFoundError:
-        print(f"❌ ERROR: File not found: {CSV_FILE_PATH}")
+    print("📋 Fetching list of contract users from Piano...")
+
+    list_response = list_contract_users()
+
+    if 'error' in list_response:
+        print(f"❌ ERROR fetching user list: {list_response['error']}")
         return
-    except Exception as e:
-        print(f"❌ ERROR reading CSV: {e}")
+
+    # Extract users from Piano response
+    # Response structure may vary - adjust based on actual Piano API response
+    contract_users = list_response.get('users', []) or list_response.get('data', [])
+
+    if not contract_users:
+        print("✅ No users found in contract. Nothing to delete.")
         return
+
+    print(f"✅ Found {len(contract_users)} users in contract")
+    print()
 
     results = {
         'deleted': [],
-        'failed': []
+        'failed': [],
+        'api_responses': []  # Capture actual API responses
     }
 
     print("🗑️  Starting deletion process...")
     print()
 
-    for i, user in enumerate(users, 1):
-        print(f"[{i}/{len(users)}] Deleting: {user['email']}")
+    for i, contract_user in enumerate(contract_users, 1):
+        # Extract email and contract_user_id from Piano response
+        email = contract_user.get('email', 'Unknown')
+        contract_user_id = contract_user.get('contract_user_id') or contract_user.get('id')
 
-        delete_response = delete_user_from_contract(user['email'])
+        if not contract_user_id:
+            print(f"[{i}/{len(contract_users)}] Skipping {email}: No contract_user_id found")
+            results['failed'].append({
+                'email': email,
+                'error': 'No contract_user_id in response'
+            })
+            continue
+
+        print(f"[{i}/{len(contract_users)}] Deleting: {email}")
+
+        delete_response = delete_user_from_contract(contract_user_id, email)
+
+        # Save the actual API response for debugging
+        results['api_responses'].append({
+            'email': email,
+            'contract_user_id': contract_user_id,
+            'response': delete_response
+        })
 
         if 'error' in delete_response:
             print(f"  ❌ Failed: {delete_response['error']}")
             results['failed'].append({
-                'email': user['email'],
+                'email': email,
                 'error': delete_response['error']
             })
         else:
             print(f"  ✅ Deleted")
-            results['deleted'].append(user['email'])
+            results['deleted'].append(email)
 
         time.sleep(RATE_LIMIT_DELAY)
 
