@@ -289,29 +289,30 @@
               "type": "text"
             },
             {
-              "key": "term_id",
-              "value": "{{term_id}}",
+              "key": "contract_id",
+              "value": "{{contract_id}}",
               "type": "text"
             },
             {
-              "key": "user_uid",
-              "value": "USR001",
+              "key": "email",
+              "value": "sarah.johnson@university.edu",
               "type": "text"
             }
           ]
         },
         "url": {
-          "raw": "{{api_base_url}}/publisher/term/revoke",
+          "raw": "{{api_base_url}}/publisher/licensing/contractUser/delete",
           "host": [
             "{{api_base_url}}"
           ],
           "path": [
             "publisher",
-            "term",
-            "revoke"
+            "licensing",
+            "contractUser",
+            "delete"
           ]
         },
-        "description": "Revokes a term (removes site license access) from a user."
+        "description": "Removes a user from a site license contract. Useful for demo cleanup."
       },
       "response": []
     }

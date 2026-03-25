@@ -9,9 +9,8 @@ Requirements:
     pip install requests python-dotenv
 
 Usage:
-    1. Copy .env.example to .env
-    2. Fill in your Piano API credentials in .env
-    3. Run: python upload_users_to_piano.py
+    Upload users:    python upload_users_to_piano.py
+    Delete all users: python upload_users_to_piano.py --delete
 
 Configuration:
     All configuration is read from .env file
@@ -22,6 +21,7 @@ import requests
 import json
 import time
 import os
+import argparse
 from pathlib import Path
 from typing import Dict, List
 from dotenv import load_dotenv
@@ -142,6 +142,33 @@ def redeem_contract_access(email: str) -> Dict:
         return {'error': str(e), 'user_email': email}
 
 
+def delete_user_from_contract(email: str) -> Dict:
+    """
+    Remove a user from a site license contract.
+
+    Args:
+        email: User's email address
+
+    Returns:
+        API response as dictionary
+    """
+    endpoint = f'{API_BASE_URL}/publisher/licensing/contractUser/delete'
+
+    payload = {
+        'api_token': API_TOKEN,
+        'aid': APP_ID,
+        'contract_id': CONTRACT_ID,
+        'email': email,
+    }
+
+    try:
+        response = requests.post(endpoint, data=payload)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        return {'error': str(e), 'user_email': email}
+
+
 def read_users_from_csv(file_path: str) -> List[Dict]:
     """
     Read users from CSV file.
@@ -167,11 +194,100 @@ def read_users_from_csv(file_path: str) -> List[Dict]:
 
 
 # ============================================================================
+# Cleanup Functions
+# ============================================================================
+
+def delete_all_users():
+    """Delete all users from the contract (for demo cleanup)."""
+
+    print("=" * 70)
+    print("Piano Site Licensing - DELETE ALL USERS")
+    print("=" * 70)
+    print()
+    print("⚠️  WARNING: This will remove ALL users from the contract!")
+    print(f"   Contract ID: {CONTRACT_ID}")
+    print()
+
+    confirm = input("Type 'DELETE' to confirm: ")
+    if confirm != 'DELETE':
+        print("❌ Cancelled.")
+        return
+
+    print()
+    print(f"📁 Reading users from: {CSV_FILE_PATH}")
+    try:
+        users = read_users_from_csv(CSV_FILE_PATH)
+        print(f"✅ Found {len(users)} users to delete")
+        print()
+    except FileNotFoundError:
+        print(f"❌ ERROR: File not found: {CSV_FILE_PATH}")
+        return
+    except Exception as e:
+        print(f"❌ ERROR reading CSV: {e}")
+        return
+
+    results = {
+        'deleted': [],
+        'failed': []
+    }
+
+    print("🗑️  Starting deletion process...")
+    print()
+
+    for i, user in enumerate(users, 1):
+        print(f"[{i}/{len(users)}] Deleting: {user['email']}")
+
+        delete_response = delete_user_from_contract(user['email'])
+
+        if 'error' in delete_response:
+            print(f"  ❌ Failed: {delete_response['error']}")
+            results['failed'].append({
+                'email': user['email'],
+                'error': delete_response['error']
+            })
+        else:
+            print(f"  ✅ Deleted")
+            results['deleted'].append(user['email'])
+
+        time.sleep(RATE_LIMIT_DELAY)
+
+    print()
+    print("=" * 70)
+    print("Deletion Complete!")
+    print("=" * 70)
+    print(f"✅ Deleted: {len(results['deleted'])}")
+    print(f"❌ Failed: {len(results['failed'])}")
+    print()
+
+    if results['failed']:
+        print("Failed deletions:")
+        for failure in results['failed']:
+            print(f"  - {failure['email']}: {failure['error']}")
+
+    # Save results
+    results_file = 'deletion_results.json'
+    with open(results_file, 'w') as f:
+        json.dump(results, f, indent=2)
+    print(f"\n📄 Full results saved to: {results_file}")
+
+
+# ============================================================================
 # Main Script
 # ============================================================================
 
 def main():
     """Main execution function."""
+
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(
+        description='Piano Site Licensing - Bulk User Upload/Delete'
+    )
+    parser.add_argument(
+        '--delete',
+        action='store_true',
+        help='Delete all users from contract (for demo cleanup)'
+    )
+    args = parser.parse_args()
 
     print("=" * 70)
     print("Piano Site Licensing - Bulk User Upload")
@@ -202,6 +318,11 @@ def main():
     print(f"   Contract ID: {CONTRACT_ID}")
     print(f"   Rate Limit: {RATE_LIMIT_DELAY}s delay")
     print()
+
+    # Handle delete mode
+    if args.delete:
+        delete_all_users()
+        return
 
     # Read users from CSV
     print(f"📁 Reading users from: {CSV_FILE_PATH}")
@@ -250,6 +371,7 @@ def main():
 
         if 'error' in redeem_response:
             print(f"  ⚠️  Warning: Failed to redeem access: {redeem_response['error']}")
+            print(f"      User is in contract but in 'pending' status (for demo this is OK)")
             results['failed'].append({
                 'email': user['email'],
                 'error': f"Access redemption failed: {redeem_response['error']}"

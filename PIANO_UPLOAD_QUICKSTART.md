@@ -26,7 +26,11 @@ nano .env
 
 ### 3. Run Upload
 ```bash
+# Upload users
 python upload_users_to_piano.py
+
+# Delete all users (for demo cleanup)
+python upload_users_to_piano.py --delete
 ```
 
 That's it! ✅
