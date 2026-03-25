@@ -1,233 +1,374 @@
+import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { JOURNALS, COURSES, LIBRARY, NEWS } from '../data';
 
+const LockBadge = ({ locked }) => (
+  <span style={{
+    display: "inline-flex", alignItems: "center", gap: 4,
+    padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600,
+    fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.5px", textTransform: "uppercase",
+    background: locked ? "rgba(142, 36, 42, 0.1)" : "rgba(34, 120, 69, 0.1)",
+    color: locked ? "#8E242A" : "#227845",
+    border: `1px solid ${locked ? "rgba(142, 36, 42, 0.2)" : "rgba(34, 120, 69, 0.2)"}`,
+  }}>
+    {locked ? "🔒 License Required" : "✓ Open Access"}
+  </span>
+);
+
+const ContentCard = ({ children, to, style }) => (
+  <Link to={to} style={{
+    display: 'block',
+    background: "white", borderRadius: 8, padding: "24px 28px",
+    border: "1px solid #E2DDD5",
+    transition: "all 0.25s ease", boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+    textDecoration: 'none',
+    color: 'inherit',
+    ...style,
+  }}
+  onMouseEnter={e => { e.currentTarget.style.borderColor = "#8E242A"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(142,36,42,0.08)"; }}
+  onMouseLeave={e => { e.currentTarget.style.borderColor = "#E2DDD5"; e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.04)"; }}
+  >
+    {children}
+  </Link>
+);
+
 export default function Home() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [hasLicense, setHasLicense] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showLicenseModal, setShowLicenseModal] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+
+  const handleLogin = () => {
+    setShowLoginModal(true);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setHasLicense(false);
+    setUserName("");
+    setUserEmail("");
+  };
+
+  const handleMockLogin = () => {
+    setIsLoggedIn(true);
+    setUserName("Sarah Mitchell");
+    setUserEmail("s.mitchell@lakeview.edu");
+    setShowLoginModal(false);
+  };
+
+  const activateLicense = () => {
+    setHasLicense(true);
+    setShowLicenseModal(false);
+  };
+
+  const canAccess = (locked) => !locked || hasLicense;
+
+  const styles = {
+    app: { fontFamily: "'DM Sans', sans-serif", background: "#FAF8F5", minHeight: "100vh", color: "#1A1A1A" },
+    header: {
+      background: "linear-gradient(135deg, #1B1B3A 0%, #2C1810 100%)",
+      borderBottom: "3px solid #C4A44A",
+      position: "sticky", top: 0, zIndex: 100,
+    },
+    headerInner: {
+      maxWidth: 1200, margin: "0 auto", padding: "0 32px",
+      display: "flex", alignItems: "center", justifyContent: "space-between", height: 72,
+    },
+    logo: { display: "flex", alignItems: "center", gap: 14 },
+    logoIcon: {
+      width: 44, height: 44, borderRadius: "50%", background: "#C4A44A",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontSize: 22, fontWeight: 800, color: "#1B1B3A", fontFamily: "'Playfair Display', serif",
+    },
+    logoText: { color: "white" },
+    logoName: { fontSize: 20, fontWeight: 700, fontFamily: "'Playfair Display', serif", letterSpacing: "-0.3px" },
+    logoSub: { fontSize: 10, letterSpacing: "2.5px", textTransform: "uppercase", color: "#C4A44A", fontWeight: 500 },
+    authArea: { display: "flex", alignItems: "center", gap: 12 },
+    loginBtn: {
+      background: "#C4A44A", color: "#1B1B3A", border: "none", borderRadius: 6,
+      padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer",
+      fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.3px",
+      transition: "all 0.2s ease",
+    },
+    userPill: {
+      display: "flex", alignItems: "center", gap: 8,
+      background: "rgba(255,255,255,0.1)", borderRadius: 24, padding: "6px 16px 6px 8px",
+    },
+    avatar: {
+      width: 28, height: 28, borderRadius: "50%", background: "#C4A44A",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontSize: 12, fontWeight: 700, color: "#1B1B3A",
+    },
+    main: { maxWidth: 1200, margin: "0 auto", padding: "40px 32px 80px" },
+    hero: {
+      background: "linear-gradient(135deg, #1B1B3A 0%, #3A1F2B 50%, #2C1810 100%)",
+      borderRadius: 16, padding: "64px 56px", marginBottom: 48, position: "relative", overflow: "hidden",
+    },
+    heroTitle: { fontFamily: "'Playfair Display', serif", fontSize: 42, fontWeight: 700, color: "white", marginBottom: 16, lineHeight: 1.2 },
+    heroSub: { fontSize: 17, color: "rgba(255,255,255,0.75)", maxWidth: 560, lineHeight: 1.6, marginBottom: 32 },
+    heroCta: {
+      background: "#C4A44A", color: "#1B1B3A", border: "none", borderRadius: 8,
+      padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer",
+      fontFamily: "'DM Sans', sans-serif",
+    },
+    licenseBanner: {
+      background: hasLicense ? "linear-gradient(90deg, #227845, #2A9D5C)" : "linear-gradient(90deg, #8E242A, #B8393F)",
+      borderRadius: 10, padding: "16px 28px", marginBottom: 32,
+      display: "flex", alignItems: "center", justifyContent: "space-between", color: "white",
+    },
+    sectionTitle: { fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700, marginBottom: 8, color: "#1B1B3A", marginTop: 48 },
+    sectionSub: { fontSize: 14, color: "#6B6560", marginBottom: 28, lineHeight: 1.5 },
+    grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 20, marginBottom: 24 },
+    cardTitle: { fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 600, marginBottom: 6, color: "#1B1B3A", lineHeight: 1.3 },
+    cardMeta: { fontSize: 12, color: "#8A8580", marginBottom: 8, lineHeight: 1.4 },
+    cardBody: { fontSize: 13, color: "#4A4540", lineHeight: 1.6, marginBottom: 12 },
+    tag: (color) => ({
+      display: "inline-block", padding: "2px 10px", borderRadius: 12,
+      fontSize: 10, fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase",
+      background: color === "blue" ? "#EBF0F7" : color === "green" ? "#E8F5ED" : "#F5EDE8",
+      color: color === "blue" ? "#2A4A7A" : color === "green" ? "#227845" : "#8E242A",
+    }),
+    statBox: {
+      textAlign: "center", padding: "24px 16px", background: "rgba(255,255,255,0.1)",
+      borderRadius: 12, flex: 1, minWidth: 120,
+    },
+    statNum: { fontFamily: "'Playfair Display', serif", fontSize: 32, fontWeight: 700, color: "#C4A44A" },
+    statLabel: { fontSize: 11, color: "rgba(255,255,255,0.6)", letterSpacing: "1px", textTransform: "uppercase", marginTop: 4 },
+    overlay: {
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 200,
+      display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)",
+    },
+    modal: {
+      background: "white", borderRadius: 16, padding: "40px 44px", maxWidth: 440, width: "100%",
+      boxShadow: "0 24px 80px rgba(0,0,0,0.2)",
+    },
+    modalTitle: { fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 700, marginBottom: 8 },
+    modalSub: { fontSize: 13, color: "#6B6560", marginBottom: 28, lineHeight: 1.5 },
+    input: {
+      width: "100%", padding: "12px 16px", border: "1px solid #D8D3CC", borderRadius: 8,
+      fontSize: 14, fontFamily: "'DM Sans', sans-serif", marginBottom: 12, boxSizing: "border-box",
+      outline: "none", background: "#FAF8F5",
+    },
+    modalBtn: {
+      width: "100%", padding: "14px", background: "#1B1B3A", color: "white",
+      border: "none", borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: "pointer",
+      fontFamily: "'DM Sans', sans-serif",
+    },
+    footer: {
+      background: "#1B1B3A", color: "rgba(255,255,255,0.5)", padding: "40px 32px",
+      textAlign: "center", fontSize: 12, letterSpacing: "0.3px",
+    },
+  };
+
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
-      <header style={{ textAlign: 'center', marginBottom: '48px' }}>
-        <h1 style={{ fontSize: '42px', marginBottom: '8px' }}>Lakeview University</h1>
-        <p style={{ fontSize: '18px', color: '#666' }}>Digital Commons</p>
+    <div style={styles.app}>
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+
+      {/* Header */}
+      <header style={styles.header}>
+        <div style={styles.headerInner}>
+          <div style={styles.logo}>
+            <div style={styles.logoIcon}>L</div>
+            <div style={styles.logoText}>
+              <div style={styles.logoName}>Lakeview University</div>
+              <div style={styles.logoSub}>Digital Commons</div>
+            </div>
+          </div>
+          <div style={styles.authArea}>
+            {!isLoggedIn ? (
+              <button style={styles.loginBtn} onClick={handleLogin}>Sign In</button>
+            ) : (
+              <>
+                <div style={styles.userPill}>
+                  <div style={styles.avatar}>{userName.charAt(0)}</div>
+                  <span style={{ fontSize: 13, color: "white", fontWeight: 500 }}>{userName.split(" ")[0]}</span>
+                </div>
+                <button onClick={handleLogout} style={{
+                  ...styles.loginBtn, background: "transparent", color: "rgba(255,255,255,0.7)", border: "1px solid rgba(255,255,255,0.2)"
+                }}>
+                  Sign Out
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       </header>
 
-      {/* Journals Section */}
-      <section style={{ marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '24px', marginBottom: '20px', borderBottom: '2px solid #0066cc', paddingBottom: '8px' }}>
-          📚 Academic Journals
-        </h2>
-        <div style={{ display: 'grid', gap: '16px' }}>
-          {JOURNALS.map(journal => (
-            <Link
-              key={journal.id}
-              to={`/journals/${journal.slug}`}
-              style={{
-                display: 'block',
-                padding: '20px',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                textDecoration: 'none',
-                color: 'inherit',
-                transition: 'all 0.2s',
-                position: 'relative'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'}
-              onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'none'}
-            >
-              {journal.locked && (
-                <div style={{
-                  position: 'absolute',
-                  top: '12px',
-                  right: '12px',
-                  padding: '4px 8px',
-                  background: '#ff4444',
-                  color: 'white',
-                  borderRadius: '4px',
-                  fontSize: '11px',
-                  fontWeight: 'bold'
-                }}>
-                  🔒 LOCKED
-                </div>
+      {/* Main */}
+      <main style={styles.main}>
+        {/* Hero */}
+        <div style={styles.hero}>
+          <div style={{ position: "absolute", top: -60, right: -40, width: 300, height: 300, borderRadius: "50%", background: "rgba(196,164,74,0.06)" }} />
+          <div style={{ position: "absolute", bottom: -80, right: 120, width: 200, height: 200, borderRadius: "50%", background: "rgba(196,164,74,0.04)" }} />
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <div style={{ fontSize: 11, letterSpacing: "3px", textTransform: "uppercase", color: "#C4A44A", marginBottom: 16, fontWeight: 600 }}>Est. 1892</div>
+            <h1 style={styles.heroTitle}>Knowledge Without Boundaries</h1>
+            <p style={styles.heroSub}>
+              Access Lakeview University's complete digital ecosystem — peer-reviewed journals, course materials,
+              digital library, and campus news — all with your institutional site license.
+            </p>
+            <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
+              {!isLoggedIn ? (
+                <button style={styles.heroCta} onClick={handleLogin}>Sign In with Piano ID</button>
+              ) : !hasLicense ? (
+                <button style={styles.heroCta} onClick={() => setShowLicenseModal(true)}>Activate Site License</button>
+              ) : (
+                <span style={{ ...styles.heroCta, display: 'inline-block' }}>Browse content below →</span>
               )}
-              <h3 style={{ fontSize: '18px', marginBottom: '8px', color: '#0066cc' }}>
-                {journal.title}
-              </h3>
-              <p style={{ fontSize: '14px', color: '#666', marginBottom: '4px' }}>
-                {journal.authors}
-              </p>
-              <p style={{ fontSize: '13px', color: '#999' }}>
-                {journal.journal} • {journal.year}
-              </p>
-            </Link>
-          ))}
+            </div>
+            <div style={{ display: "flex", gap: 16, marginTop: 40, flexWrap: "wrap" }}>
+              {[
+                { num: "12,400+", label: "Journal Articles" },
+                { num: "340", label: "Online Courses" },
+                { num: "48,000", label: "Digital Volumes" },
+                { num: "15,000", label: "Active Licenses" },
+              ].map((s, i) => (
+                <div key={i} style={styles.statBox}>
+                  <div style={styles.statNum}>{s.num}</div>
+                  <div style={styles.statLabel}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </section>
 
-      {/* Courses Section */}
-      <section style={{ marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '24px', marginBottom: '20px', borderBottom: '2px solid #0066cc', paddingBottom: '8px' }}>
-          🎓 Courses
-        </h2>
-        <div style={{ display: 'grid', gap: '16px' }}>
-          {COURSES.map(course => (
-            <Link
-              key={course.id}
-              to={`/courses/${course.slug}`}
-              style={{
-                display: 'block',
-                padding: '20px',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                textDecoration: 'none',
-                color: 'inherit',
-                transition: 'all 0.2s',
-                position: 'relative'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'}
-              onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'none'}
-            >
-              {course.locked && (
-                <div style={{
-                  position: 'absolute',
-                  top: '12px',
-                  right: '12px',
-                  padding: '4px 8px',
-                  background: '#ff4444',
-                  color: 'white',
-                  borderRadius: '4px',
-                  fontSize: '11px',
-                  fontWeight: 'bold'
-                }}>
-                  🔒 LOCKED
-                </div>
-              )}
-              <div style={{ fontSize: '13px', color: '#666', fontWeight: 'bold', marginBottom: '4px' }}>
-                {course.code}
+        {/* License Banner */}
+        {isLoggedIn && (
+          <div style={styles.licenseBanner}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>
+                {hasLicense ? "✓ Site License Active" : "Site License Not Activated"}
               </div>
-              <h3 style={{ fontSize: '18px', marginBottom: '8px', color: '#0066cc' }}>
-                {course.title}
-              </h3>
-              <p style={{ fontSize: '14px', color: '#666' }}>
-                {course.instructor} • {course.term}
-              </p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Library Section */}
-      <section style={{ marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '24px', marginBottom: '20px', borderBottom: '2px solid #0066cc', paddingBottom: '8px' }}>
-          📖 Digital Library
-        </h2>
-        <div style={{ display: 'grid', gap: '16px' }}>
-          {LIBRARY.map(book => (
-            <Link
-              key={book.id}
-              to={`/library/${book.slug}`}
-              style={{
-                display: 'block',
-                padding: '20px',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                textDecoration: 'none',
-                color: 'inherit',
-                transition: 'all 0.2s',
-                position: 'relative'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'}
-              onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'none'}
-            >
-              {book.locked && (
-                <div style={{
-                  position: 'absolute',
-                  top: '12px',
-                  right: '12px',
-                  padding: '4px 8px',
-                  background: '#ff4444',
-                  color: 'white',
-                  borderRadius: '4px',
-                  fontSize: '11px',
-                  fontWeight: 'bold'
-                }}>
-                  🔒 LOCKED
-                </div>
-              )}
-              <h3 style={{ fontSize: '18px', marginBottom: '8px', color: '#0066cc' }}>
-                {book.title}
-              </h3>
-              <p style={{ fontSize: '14px', color: '#666', marginBottom: '4px' }}>
-                {book.author}
-              </p>
-              <p style={{ fontSize: '13px', color: '#999' }}>
-                {book.type} • {book.year} • {book.pages} pages
-              </p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* News Section */}
-      <section style={{ marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '24px', marginBottom: '20px', borderBottom: '2px solid #0066cc', paddingBottom: '8px' }}>
-          📰 Campus News
-        </h2>
-        <div style={{ display: 'grid', gap: '16px' }}>
-          {NEWS.map(article => (
-            <Link
-              key={article.id}
-              to={`/news/${article.slug}`}
-              style={{
-                display: 'block',
-                padding: '20px',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                textDecoration: 'none',
-                color: 'inherit',
-                transition: 'all 0.2s',
-                position: 'relative'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'}
-              onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'none'}
-            >
-              {article.locked && (
-                <div style={{
-                  position: 'absolute',
-                  top: '12px',
-                  right: '12px',
-                  padding: '4px 8px',
-                  background: '#ff4444',
-                  color: 'white',
-                  borderRadius: '4px',
-                  fontSize: '11px',
-                  fontWeight: 'bold'
-                }}>
-                  🔒 LOCKED
-                </div>
-              )}
-              <div style={{
-                display: 'inline-block',
-                padding: '4px 8px',
-                background: '#e3f2fd',
-                color: '#1976d2',
-                borderRadius: '4px',
-                fontSize: '11px',
-                fontWeight: 'bold',
-                marginBottom: '8px'
-              }}>
-                {article.category}
+              <div style={{ fontSize: 12, opacity: 0.85 }}>
+                {hasLicense
+                  ? "You have full access to all Lakeview University digital resources."
+                  : "Activate your institutional license to access premium content."}
               </div>
-              <h3 style={{ fontSize: '18px', marginBottom: '8px', color: '#0066cc' }}>
-                {article.title}
-              </h3>
-              <p style={{ fontSize: '14px', color: '#666', marginBottom: '4px' }}>
-                {article.excerpt}
-              </p>
-              <p style={{ fontSize: '13px', color: '#999' }}>
-                {article.date}
-              </p>
-            </Link>
+            </div>
+            {!hasLicense && (
+              <button onClick={() => setShowLicenseModal(true)} style={{
+                background: "white", color: "#8E242A", border: "none", borderRadius: 6,
+                padding: "10px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer",
+                fontFamily: "'DM Sans', sans-serif",
+              }}>Activate License</button>
+            )}
+          </div>
+        )}
+
+        {/* Journals */}
+        <h2 style={styles.sectionTitle}>Academic Journals</h2>
+        <p style={styles.sectionSub}>Peer-reviewed research from Lakeview faculty and affiliated scholars</p>
+        <div style={styles.grid}>
+          {JOURNALS.map(j => (
+            <ContentCard key={j.id} to={`/journals/${j.slug}`}>
+              <div style={{ marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={styles.tag("blue")}>{j.volume}</span>
+                <LockBadge locked={j.locked && !hasLicense} />
+              </div>
+              <h3 style={styles.cardTitle}>{j.title}</h3>
+              <div style={styles.cardMeta}>{j.authors}</div>
+              <div style={styles.cardMeta}>{j.journal} · {j.year}</div>
+              <p style={styles.cardBody}>{canAccess(j.locked) ? j.abstract.substring(0, 100) + "..." : j.abstract.substring(0, 60) + "..."}</p>
+            </ContentCard>
           ))}
         </div>
-      </section>
+
+        {/* Courses */}
+        <h2 style={styles.sectionTitle}>Online Courses</h2>
+        <p style={styles.sectionSub}>Spring 2026 semester course materials and learning modules</p>
+        <div style={styles.grid}>
+          {COURSES.map(c => (
+            <ContentCard key={c.id} to={`/courses/${c.slug}`}>
+              <div style={{ marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={styles.tag("green")}>{c.code}</span>
+                <LockBadge locked={c.locked && !hasLicense} />
+              </div>
+              <h3 style={styles.cardTitle}>{c.title}</h3>
+              <div style={styles.cardMeta}>{c.instructor} · {c.term}</div>
+              <div style={{ display: "flex", gap: 20, marginTop: 12 }}>
+                <div style={{ fontSize: 12, color: "#6B6560" }}><strong style={{ color: "#1B1B3A" }}>{c.enrolled}</strong> enrolled</div>
+                <div style={{ fontSize: 12, color: "#6B6560" }}><strong style={{ color: "#1B1B3A" }}>{c.modules}</strong> modules</div>
+              </div>
+            </ContentCard>
+          ))}
+        </div>
+
+        {/* Library */}
+        <h2 style={styles.sectionTitle}>Digital Library</h2>
+        <p style={styles.sectionSub}>Textbooks, reference materials, and academic collections</p>
+        <div style={styles.grid}>
+          {LIBRARY.map(b => (
+            <ContentCard key={b.id} to={`/library/${b.slug}`}>
+              <div style={{ marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={styles.tag("red")}>{b.type}</span>
+                <LockBadge locked={b.locked && !hasLicense} />
+              </div>
+              <h3 style={styles.cardTitle}>{b.title}</h3>
+              <div style={styles.cardMeta}>{b.author}</div>
+              <div style={{ display: "flex", gap: 20, marginTop: 12 }}>
+                <div style={{ fontSize: 12, color: "#6B6560" }}><strong style={{ color: "#1B1B3A" }}>{b.year}</strong></div>
+                <div style={{ fontSize: 12, color: "#6B6560" }}><strong style={{ color: "#1B1B3A" }}>{b.pages}</strong> pages</div>
+              </div>
+            </ContentCard>
+          ))}
+        </div>
+
+        {/* News */}
+        <h2 style={styles.sectionTitle}>Campus News</h2>
+        <p style={styles.sectionSub}>Latest updates and announcements from Lakeview University</p>
+        <div style={styles.grid}>
+          {NEWS.map(n => (
+            <ContentCard key={n.id} to={`/news/${n.slug}`}>
+              <div style={{ marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={styles.tag("blue")}>{n.category}</span>
+                <LockBadge locked={n.locked && !hasLicense} />
+              </div>
+              <h3 style={styles.cardTitle}>{n.title}</h3>
+              <div style={styles.cardMeta}>{n.date}</div>
+              <p style={styles.cardBody}>{n.excerpt.substring(0, 100) + "..."}</p>
+            </ContentCard>
+          ))}
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer style={styles.footer}>
+        <div>© 2026 Lakeview University · Digital Commons Platform</div>
+        <div style={{ marginTop: 8, opacity: 0.6 }}>Demo site showcasing Piano integration for institutional access management</div>
+      </footer>
+
+      {/* Login Modal */}
+      {showLoginModal && (
+        <div style={styles.overlay} onClick={() => setShowLoginModal(false)}>
+          <div style={styles.modal} onClick={e => e.stopPropagation()}>
+            <h2 style={styles.modalTitle}>Sign In</h2>
+            <p style={styles.modalSub}>Access your Lakeview University account</p>
+            <input type="email" placeholder="Email address" style={styles.input} defaultValue="s.mitchell@lakeview.edu" />
+            <input type="password" placeholder="Password" style={styles.input} defaultValue="••••••••" />
+            <button style={styles.modalBtn} onClick={handleMockLogin}>Sign In (Mock)</button>
+            <p style={{ textAlign: "center", fontSize: 12, color: "#8A8580", marginTop: 16 }}>
+              In production, this would use Piano ID
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* License Modal */}
+      {showLicenseModal && (
+        <div style={styles.overlay} onClick={() => setShowLicenseModal(false)}>
+          <div style={styles.modal} onClick={e => e.stopPropagation()}>
+            <h2 style={styles.modalTitle}>Activate Site License</h2>
+            <p style={styles.modalSub}>Enter your institutional license key to unlock all content</p>
+            <input type="text" placeholder="License Key" style={styles.input} defaultValue="LAKEVIEW-2026-DEMO" />
+            <button style={styles.modalBtn} onClick={activateLicense}>Activate License (Mock)</button>
+            <p style={{ textAlign: "center", fontSize: 12, color: "#8A8580", marginTop: 16 }}>
+              In production, this would use Piano's offer flow
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
