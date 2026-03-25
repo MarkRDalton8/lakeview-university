@@ -114,6 +114,8 @@ export default function AccountPage() {
       borderRadius: 12,
       border: "1px solid #E2DDD5",
       padding: 32,
+      overflow: "auto",
+      boxSizing: "border-box",
     },
     loginPrompt: {
       minHeight: 400,
@@ -136,6 +138,15 @@ export default function AccountPage() {
   return (
     <div style={styles.app}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+      <style>{`
+        #piano-my-account * {
+          box-sizing: border-box;
+          max-width: 100%;
+        }
+        #piano-my-account iframe {
+          max-width: 100% !important;
+        }
+      `}</style>
 
       {/* Header */}
       <header style={styles.header}>
