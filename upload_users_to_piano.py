@@ -248,8 +248,7 @@ def delete_all_users():
         return
 
     # Extract users from Piano response
-    # Response structure may vary - adjust based on actual Piano API response
-    contract_users = list_response.get('users', []) or list_response.get('data', [])
+    contract_users = list_response.get('ContractUserList', [])
 
     if not contract_users:
         print("✅ No users found in contract. Nothing to delete.")
