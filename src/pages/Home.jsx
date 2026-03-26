@@ -341,32 +341,42 @@ export default function Home() {
       </footer>
 
       {/* Sticky Square Newsletter - Piano will inject template here */}
-      {showNewsletter && (
-        <>
-          <style>{`
-            @keyframes slideLeft {
-              from {
-                transform: translateX(500px);
-              }
-              to {
-                transform: translateX(0);
-              }
-            }
-          `}</style>
-          <div
-            className="piano-newsletter-container"
-            style={{
-              position: 'fixed',
-              right: '40px',
-              bottom: '40px',
-              width: '350px',
-              zIndex: 1000,
-              transform: 'translateX(500px)',
-              animation: 'slideLeft 1s cubic-bezier(0.05, 0.36, 0.29, 1.1) forwards'
-            }}
-          ></div>
-        </>
-      )}
+      <style>{`
+        @keyframes slideIn {
+          from {
+            transform: translateX(500px);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+        @keyframes slideOut {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(500px);
+          }
+        }
+        .piano-newsletter-container {
+          position: fixed;
+          right: 40px;
+          bottom: 40px;
+          width: 350px;
+          z-index: 1000;
+          transform: translateX(500px);
+          pointer-events: none;
+        }
+        .piano-newsletter-container.show {
+          animation: slideIn 1s cubic-bezier(0.05, 0.36, 0.29, 1.1) forwards;
+          pointer-events: auto;
+        }
+        .piano-newsletter-container.hide {
+          animation: slideOut 0.5s cubic-bezier(0.36, 0.05, 1.1, 0.29) forwards;
+          pointer-events: none;
+        }
+      `}</style>
+      <div className={`piano-newsletter-container ${showNewsletter ? 'show' : 'hide'}`}></div>
     </div>
   );
 }
