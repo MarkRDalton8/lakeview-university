@@ -58,9 +58,11 @@ export default function Home() {
       const newsSection = document.getElementById('news');
       if (newsSection) {
         const rect = newsSection.getBoundingClientRect();
-        // Show newsletter when Campus News section is visible
+        // Show newsletter when Campus News section is visible, hide when not
         if (rect.top <= window.innerHeight && rect.bottom >= 0) {
           setShowNewsletter(true);
+        } else {
+          setShowNewsletter(false);
         }
       }
     };
