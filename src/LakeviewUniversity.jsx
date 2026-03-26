@@ -193,7 +193,7 @@ export default function LakeviewUniversity() {
   const navItems = [
     { key: "home", label: "Home" },
     { key: "journals", label: "Journals" },
-    { key: "courses", label: "Courses" },
+    { key: "courses", label: "Training" },
     { key: "library", label: "Library" },
     { key: "news", label: "Campus News" },
   ];
@@ -347,7 +347,7 @@ export default function LakeviewUniversity() {
           <div style={{ display: "flex", gap: 16, marginTop: 40, flexWrap: "wrap" }}>
             {[
               { num: "12,400+", label: "Journal Articles" },
-              { num: "340", label: "Online Courses" },
+              { num: "340", label: "Online Training" },
               { num: "48,000", label: "Digital Volumes" },
               { num: "15,000", label: "Active Licenses" },
             ].map((s, i) => (
@@ -435,8 +435,8 @@ export default function LakeviewUniversity() {
 
   const renderCourses = () => (
     <>
-      <h2 style={styles.sectionTitle}>Online Courses</h2>
-      <p style={styles.sectionSub}>Spring 2026 semester course materials and learning modules</p>
+      <h2 style={styles.sectionTitle}>Online Training</h2>
+      <p style={styles.sectionSub}>Spring 2026 semester training materials and learning modules</p>
       <div style={styles.grid}>
         {COURSES.map(c => (
           <ContentCard key={c.id}>
@@ -599,7 +599,7 @@ export default function LakeviewUniversity() {
               <div style={styles.accountLabel}>License Details</div>
               <div style={{ fontSize: 13, color: "#4A4540", lineHeight: 2 }}>
                 Type: Institutional Site License<br/>
-                Resources: Journals, Courses, Library, News (Full Access)<br/>
+                Resources: Journals, Training, Library, News (Full Access)<br/>
                 Issued: Sep 1, 2025<br/>
                 Renewal: Automatic
               </div>
