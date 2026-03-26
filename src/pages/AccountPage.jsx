@@ -161,7 +161,7 @@ export default function AccountPage() {
           <nav style={styles.nav}>
             <a href="/" style={styles.navLink(false)}>Home</a>
             <a href="/#journals" style={styles.navLink(false)}>Journals</a>
-            <a href="/#courses" style={styles.navLink(false)}>Courses</a>
+            <a href="/#courses" style={styles.navLink(false)}>Training</a>
             <a href="/#library" style={styles.navLink(false)}>Library</a>
             <a href="/#news" style={styles.navLink(false)}>Campus News</a>
             {isLoggedIn && <a href="/account" style={styles.navLink(true)}>My Account</a>}

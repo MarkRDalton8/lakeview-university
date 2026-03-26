@@ -197,7 +197,7 @@ export default function Home() {
           <nav style={styles.nav}>
             <button style={styles.navBtn(currentSection === 'home')} onClick={() => scrollToSection('home')}>Home</button>
             <button style={styles.navBtn(currentSection === 'journals')} onClick={() => scrollToSection('journals')}>Journals</button>
-            <button style={styles.navBtn(currentSection === 'courses')} onClick={() => scrollToSection('courses')}>Courses</button>
+            <button style={styles.navBtn(currentSection === 'courses')} onClick={() => scrollToSection('courses')}>Training</button>
             <button style={styles.navBtn(currentSection === 'library')} onClick={() => scrollToSection('library')}>Library</button>
             <button style={styles.navBtn(currentSection === 'news')} onClick={() => scrollToSection('news')}>Campus News</button>
             {isLoggedIn && <a href="/account" style={{ ...styles.navBtn(false), textDecoration: 'none' }}>My Account</a>}
@@ -276,9 +276,9 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Courses */}
-        <h2 id="courses" style={styles.sectionTitle}>Online Courses</h2>
-        <p style={styles.sectionSub}>Spring 2026 semester course materials and learning modules</p>
+        {/* Training */}
+        <h2 id="courses" style={styles.sectionTitle}>Online Training</h2>
+        <p style={styles.sectionSub}>Spring 2026 semester training materials and learning modules</p>
         <div style={styles.grid}>
           {COURSES.map(c => (
             <ContentCard key={c.id} to={`/courses/${c.slug}`}>
