@@ -245,7 +245,7 @@ export default function Home() {
             <div style={{ display: "flex", gap: 16, marginTop: 40, flexWrap: "wrap" }}>
               {[
                 { num: "12,400+", label: "Journal Articles" },
-                { num: "340", label: "Online Courses" },
+                { num: "340", label: "Online Training" },
                 { num: "48,000", label: "Digital Volumes" },
                 { num: "15,000", label: "Active Licenses" },
               ].map((s, i) => (
